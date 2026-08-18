@@ -1,0 +1,11 @@
+INICIAR EL SERVIDOR LOCAL
+
+Desde la raíz del repositorio ejecuta:
+
+  .venv/bin/mkdocs serve
+
+Luego abre esta dirección en el navegador:
+
+  http://127.0.0.1:8000
+
+Para detener el servidor presiona Ctrl+C en la terminal.

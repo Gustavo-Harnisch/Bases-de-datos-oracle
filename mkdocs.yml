@@ -1,0 +1,110 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
+site_name: Bases de datos Oracle
+site_description: Documentacion del repositorio Bases de datos Oracle
+docs_dir: docs
+site_dir: site
+strict: true
+
+theme:
+  name: material
+  language: es
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Usar preferencia del sistema
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Cambiar a tema oscuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Cambiar a tema automatico
+
+plugins:
+  - search:
+      lang: es
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.snippets:
+      base_path:
+        - docs
+      check_paths: true
+      restrict_base_path: true
+
+# Los fragmentos son componentes de otras paginas, no paginas navegables.
+exclude_docs: |
+  _includes/
+
+nav:
+  - Inicio: index.md
+  - Clases 2026:
+      - Calendario general: clases/index.md
+      - Agosto:
+          - Semana 1:
+              - "Clase 1 · Martes 11": clases/2026/agosto/semana-01/11-martes.md
+              - "Clase 2 · Miércoles 12": clases/2026/agosto/semana-01/12-miercoles.md
+          - Semana 2:
+              - "Clase 3 · Martes 18": clases/2026/agosto/semana-02/18-martes.md
+              - "Clase 4 · Miércoles 19": clases/2026/agosto/semana-02/19-miercoles.md
+          - Semana 3:
+              - "Clase 5 · Martes 25": clases/2026/agosto/semana-03/25-martes.md
+              - "Clase 6 · Miércoles 26": clases/2026/agosto/semana-03/26-miercoles.md
+      - Septiembre:
+          - Semana 1:
+              - "Clase 7 · Martes 1": clases/2026/septiembre/semana-01/01-martes.md
+              - "Clase 8 · Miércoles 2": clases/2026/septiembre/semana-01/02-miercoles.md
+          - Semana 2:
+              - "Clase 9 · Martes 8": clases/2026/septiembre/semana-02/08-martes.md
+              - "Clase 10 · Miércoles 9": clases/2026/septiembre/semana-02/09-miercoles.md
+          - Semana 3:
+              - "Clase 11 · Martes 15": clases/2026/septiembre/semana-03/15-martes.md
+              - "Clase 12 · Miércoles 16": clases/2026/septiembre/semana-03/16-miercoles.md
+          - Semana 4:
+              - "Clase 13 · Martes 22": clases/2026/septiembre/semana-04/22-martes.md
+              - "Clase 14 · Miércoles 23": clases/2026/septiembre/semana-04/23-miercoles.md
+          - Semana 5:
+              - "Clase 15 · Martes 29": clases/2026/septiembre/semana-05/29-martes.md
+              - "Clase 16 · Miércoles 30": clases/2026/septiembre/semana-05/30-miercoles.md
+      - Octubre:
+          - Semana 1:
+              - "Clase 17 · Martes 6": clases/2026/octubre/semana-01/06-martes.md
+              - "Clase 18 · Miércoles 7": clases/2026/octubre/semana-01/07-miercoles.md
+          - Semana 2:
+              - "Clase 19 · Martes 13": clases/2026/octubre/semana-02/13-martes.md
+              - "Clase 20 · Miércoles 14": clases/2026/octubre/semana-02/14-miercoles.md
+          - Semana 3:
+              - "Clase 21 · Martes 20": clases/2026/octubre/semana-03/20-martes.md
+              - "Clase 22 · Miércoles 21": clases/2026/octubre/semana-03/21-miercoles.md
+          - Semana 4:
+              - "Clase 23 · Martes 27": clases/2026/octubre/semana-04/27-martes.md
+              - "Clase 24 · Miércoles 28": clases/2026/octubre/semana-04/28-miercoles.md
+      - Noviembre:
+          - Semana 1:
+              - "Clase 25 · Martes 3": clases/2026/noviembre/semana-01/03-martes.md
+              - "Clase 26 · Miércoles 4": clases/2026/noviembre/semana-01/04-miercoles.md
+          - Semana 2:
+              - "Clase 27 · Martes 10": clases/2026/noviembre/semana-02/10-martes.md
+              - "Clase 28 · Miércoles 11": clases/2026/noviembre/semana-02/11-miercoles.md
+          - Semana 3:
+              - "Clase 29 · Martes 17": clases/2026/noviembre/semana-03/17-martes.md
+              - "Clase 30 · Miércoles 18": clases/2026/noviembre/semana-03/18-miercoles.md
+          - Semana 4:
+              - "Clase 31 · Martes 24": clases/2026/noviembre/semana-04/24-martes.md
+              - "Clase 32 · Miércoles 25": clases/2026/noviembre/semana-04/25-miercoles.md
+      - Diciembre:
+          - Semana 1:
+              - "Clase 33 · Martes 1": clases/2026/diciembre/semana-01/01-martes.md
+              - "Clase 34 · Miércoles 2": clases/2026/diciembre/semana-01/02-miercoles.md
+          - Semana 2:
+              - "Clase 35 · Martes 8": clases/2026/diciembre/semana-02/08-martes.md
+              - "Clase 36 · Miércoles 9": clases/2026/diciembre/semana-02/09-miercoles.md
+  - Guía:
+      - Ejecutar la documentación: guia/entorno.md
+      - Contenido modular: guia/modularidad.md

@@ -1,0 +1,175 @@
+-- Ejercicio N° 
+    /*
+     
+    
+    */
+
+SELECT 
+    CONCAT('El Codigo del cargo ',
+    CONCAT(JOB_TITLE,
+    CONCAT('Es ',JOB_ID)))
+FROM OHER_JOBS
+WHERE UPPER(JOB_TITLE) LIKE 'S%' OR UPPER(JOB_ID) LIKE 'S%'; 
+
+
+
+
+-- Ejercicio N° 
+    /*
+    
+    
+    */
+
+SELECT JOB_ID AS 'OFICIO'
+    COUNT(EMPLOYEE_ID) AS "CANTIDAD_EMPLEADOS",
+    AVG(SALARY) AS "PROMEDIO:SUELDO"
+
+FROM OEHR_EMPLOYEES
+WHERE MAX(SALARY) - MIN(SALARY) <> 0; 
+GROUP BY
+HAVING
+ORDER BY
+
+
+
+-- Ejercicio N° 
+    /*
+    
+    
+    */
+
+SELECT 
+    E.EMPLOYEE_ID,
+    E.FIRST_NAME,
+    D.DEPARTMENT_NAME,
+    J.FIRST_NAME
+FROM OEHR_EMPLOYEES E JOIN OEHR_DEPARTMENTS ON(E.DEPARMENT_ID = D.DEPARTMENT_ID)
+    JOIN OEHR_EMPLOYEES J ON(E.MANAGER_ID = J.EMPLOYEE_ID);
+
+
+
+
+-- Ejercicio N° 
+    /*
+    
+    
+    */
+
+SELECT 
+    JOBS_ID, 
+    AVG(MIN_SALARY)
+FROM OEHR_JOBS
+WHERE OEHR_JOBS
+GROUP BY JOB_ID
+HAVING AVG(MIN_SALARY) > 3000;
+
+
+
+
+-- Ejercicio N° 
+    /*
+    
+    
+    */
+
+SELECT 
+    E.EMPLOYEE_ID,
+    E.FIRST_NAME || ' ' || E.LAST_NAME,
+    D.DEPARMENT_NAME
+FROM OEHR_EMPLOYEES E JOIN OEHR_DEPARTMENT D  ON(DEPARTMENT_ID = D.DEPARTMENT)
+WHERE E.DEPARTMENT_ID IN (
+    SELECT DEPARTMENT_ID
+    FROM OEHR_EMPLOYEES
+    WHERE LAST_NAME = 'WHALEN' OR LAST_NAME = 'KING') 
+
+
+
+-- Ejercicio N° 
+    /*
+    
+    
+    */
+
+SELECT
+FROM
+WHERE
+GROUP BY
+HAVING
+ORDER BY
+
+
+
+-- Ejercicio N° 
+    /*
+    
+    
+    */
+
+SELECT
+FROM
+WHERE
+GROUP BY
+HAVING
+ORDER BY
+
+
+
+-- Ejercicio N° 
+    /*
+    
+    
+    */
+
+SELECT
+FROM
+WHERE
+GROUP BY
+HAVING
+ORDER BY
+
+
+
+-- Ejercicio N° 
+    /*
+    
+    
+    */
+
+SELECT
+FROM
+WHERE
+GROUP BY
+HAVING
+ORDER BY
+
+
+
+-- Ejercicio N° 
+    /*
+    
+    
+    */
+
+SELECT
+FROM
+WHERE
+GROUP BY
+HAVING
+ORDER BY
+
+
+
+-- Ejercicio N° 
+    /*
+    
+    
+    */
+
+SELECT
+FROM
+WHERE
+GROUP BY
+HAVING
+ORDER BY
+
+

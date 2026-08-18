@@ -1,0 +1,86 @@
+NORMALIZACION DE BASES DE DATOS
+
+La normalizacion es un proceso de refinamiento del esquema relacional cuyo
+objetivo es disminuir la redundancia, controlar las anomalias operativas y
+garantizar una representacion semantica mas rigurosa de los datos.
+
+Desde la teoria relacional, normalizar implica estudiar dependencias
+funcionales, dependencias multivaluadas, claves candidatas, superclaves y
+criterios de descomposicion sin perdida de informacion.
+
+Una relacion mal disenada suele mezclar hechos de distinta granularidad.
+Cuando eso ocurre, un mismo dato se repite en varias tuplas y aparecen
+anomalias de insercion, actualizacion y eliminacion.
+
+La anomalia de insercion ocurre cuando no es posible registrar un hecho sin
+inventar o duplicar otro dato. La de actualizacion aparece cuando un mismo
+valor debe corregirse en varios registros. La de eliminacion surge cuando al
+borrar una tupla se pierde informacion que representaba otro hecho distinto.
+
+La Primera Forma Normal, o 1FN, exige atomicidad en los atributos.
+Esto significa que cada interseccion fila-columna debe contener un valor
+indivisible dentro del dominio definido para ese atributo.
+
+La Segunda Forma Normal, o 2FN, requiere que la relacion este en 1FN y que
+todo atributo no primo dependa funcionalmente de la clave completa, no de una
+fraccion de ella. Esta regla es crucial cuando existen claves compuestas.
+
+La Tercera Forma Normal, o 3FN, exige 2FN y ademas elimina dependencias
+transitivas entre atributos no clave. En terminos formales, un atributo no
+primo no debe depender de otro atributo no primo, sino de la clave.
+
+La Forma Normal de Boyce-Codd, o BCNF, endurece el criterio anterior.
+Toda dependencia funcional no trivial X -> Y debe tener a X como superclave.
+BCNF reduce aun mas las anomalas, aunque a veces compromete dependencias.
+
+La Cuarta Forma Normal, o 4FN, aborda dependencias multivaluadas no triviales.
+Una relacion esta en 4FN cuando, para toda dependencia multivaluada X ->> Y,
+X es una superclave. Esto evita combinaciones espurias entre conjuntos
+independientes de valores.
+
+Al normalizar no basta separar tablas intuitivamente. Debe verificarse una
+descomposicion sin perdida y, cuando sea posible, una preservacion adecuada
+de dependencias. Separar mal puede producir reconstrucciones ambiguas o
+forzar validaciones costosas fuera del esquema.
+
+Consideremos la relacion:
+INSCRIPCION(Estudiante, Materia, Docente, Aula, Horario, Carrera)
+
+Si Materia determina Docente, Aula y Horario, y Estudiante determina Carrera,
+entonces almacenar todo junto implica repetir datos del estudiante y de la
+materia en cada inscripcion. Esa estructura favorece redundancia semantica.
+
+Una descomposicion razonable seria:
+ESTUDIANTE(Estudiante, Carrera)
+MATERIA(Materia, Docente, Aula, Horario)
+INSCRIPCION(Estudiante, Materia)
+
+Con esta separacion, cada relacion modela un hecho especifico. ESTUDIANTE
+describe propiedades del estudiante. MATERIA concentra propiedades de la
+asignatura. INSCRIPCION representa el vinculo entre ambos.
+
+Dicho de una manera mas simple, normalizar es ordenar la informacion para que
+cada dato viva en el lugar que le corresponde y no aparezca repetido sin
+necesidad.
+
+Cuando un dato se repite muchas veces, el sistema se vuelve fragil. Si cambia
+el aula de una materia, habria que actualizar muchas filas. Si una fila queda
+sin corregir, la base de datos pasa a contener contradicciones.
+
+Por eso decimos que la normalizacion protege la consistencia. No solo busca
+"tener mas tablas", sino distribuir la informacion segun dependencias reales
+entre los atributos.
+
+La 1FN nos ensena a no guardar listas o grupos repetidos dentro de una sola
+celda. La 2FN nos recuerda que, si la clave tiene varias partes, un atributo
+debe depender de todas ellas y no solo de una. La 3FN evita cadenas de
+dependencia innecesarias entre atributos que no son clave.
+
+BCNF y 4FN profundizan el analisis cuando el esquema presenta reglas mas
+complejas. En cursos introductorios suele bastar con dominar 1FN, 2FN y 3FN,
+pero comprender las formas superiores permite disenar con mas precision.
+
+En sintesis, la normalizacion es una tecnica de diseno logico orientada a
+mejorar integridad, reducir redundancia y facilitar mantenimiento. Un esquema
+normalizado no garantiza por si solo alto rendimiento, pero si establece una
+base coherente, verificable y teoricamente solida para operar con datos.

@@ -1,0 +1,21 @@
+Un nuevo servicio de correo electrónico llamado ``BARK'' será inaugurado próximamente en BARK-LANDIA.
+La administración del sitio desea lanzar su proyecto lo antes posible, por lo que te piden ayuda. Se te solicita implementar un prototipo del sistema de registro del sitio.
+
+El sistema debe funcionar según el siguiente principio:
+
+Cada vez que un nuevo usuario desea registrarse, envía al sistema una solicitud con su \t{name}.
+Si dicho \t{name} no existe en la base de datos del sistema, este se inserta en la base de datos y el usuario recibe la respuesta \t{OK}, confirmando el registro exitoso.
+Si el \t{name} ya existe en la base de datos del sistema, el sistema genera un nuevo nombre de usuario, se lo envía al usuario como sugerencia y \textit{también inserta esa sugerencia en la base de datos}.
+
+El nuevo nombre se forma de la siguiente manera: se van agregando números consecutivos, empezando desde 1, al final de \t{name} (\t{name1}, \t{name2}, \dots). Entre estos números se elige el menor $i$ tal que \t{name}$i$ aún no exista en la base de datos.
+
+\InputFile
+La primera línea contiene el número $n$ ($1 \le n \le 10^5$).
+Las siguientes $n$ líneas contienen las solicitudes al sistema.
+Cada solicitud es una línea no vacía que consiste en no más de 32 caracteres, todos ellos letras latinas minúsculas.
+
+\OutputFile
+Imprime $n$ líneas, que son las respuestas del sistema a las solicitudes:
+\t{OK} en caso de registro exitoso, o una sugerencia con un nuevo nombre si el solicitado ya está en uso.
+
+\Examples
