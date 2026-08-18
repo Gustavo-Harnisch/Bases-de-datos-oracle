@@ -1,7 +1,11 @@
 # yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
 
 site_name: Bases de datos Oracle
-site_description: Documentacion del repositorio Bases de datos Oracle
+site_description: Documentación del repositorio Bases de datos Oracle
+site_url: https://gustavo-harnisch.github.io/Bases-de-datos-oracle/
+repo_url: https://github.com/Gustavo-Harnisch/Bases-de-datos-oracle
+repo_name: Gustavo-Harnisch/Bases-de-datos-oracle
+edit_uri: edit/main/docs/
 docs_dir: docs
 site_dir: site
 strict: true
