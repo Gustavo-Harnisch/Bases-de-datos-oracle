@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% if page.url_to_pdf %}
+    <a
+      href="{{ page.url_to_pdf }}"
+      title="Descargar documentación en PDF"
+      aria-label="Descargar documentación en PDF"
+      class="md-content__button md-icon pdf-download-button"
+    >
+      {% include ".icons/material/file-pdf-box.svg" %}
+    </a>
+  {% endif %}
+  {{ super() }}
+{% endblock content %}

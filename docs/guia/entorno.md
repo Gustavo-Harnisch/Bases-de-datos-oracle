@@ -27,3 +27,15 @@ activo, los cambios en los archivos se recargan automáticamente.
 
 El resultado se genera en `site/`, una carpeta ignorada por Git.
 
+## Generar la entrega imprimible
+
+Con Google Chrome o Chromium instalado, ejecuta:
+
+```bash
+./scripts/build-docs-pdf.sh
+```
+
+Este comando valida el sitio y genera
+`site/assets/pdf/bases-de-datos-oracle.pdf`. Consulta
+[Generar y entregar el PDF](impresion.md) para conocer la arquitectura y las
+opciones de impresión.
