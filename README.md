@@ -51,11 +51,15 @@ Para compilar el sitio y generar el documento imprimible:
 ./scripts/build-docs-pdf.sh
 ```
 
-El resultado queda en
-`site/assets/pdf/bases-de-datos-oracle.pdf`. El script necesita Google Chrome o
-Chromium; se puede indicar otro ejecutable mediante `CHROME_BIN`.
+El resultado principal queda en
+`site/assets/pdf/bases-de-datos-oracle.pdf`. La misma ejecución convierte los
+PowerPoint de `U1/presentaciones/` a PDF y copia los SQL de `U1/codigos/` como
+descargas del sitio. El script necesita Google Chrome o Chromium; se puede
+indicar otro ejecutable mediante `CHROME_BIN`. La conversión de presentaciones
+usa LibreOffice cuando está disponible.
 
-La guía de uso y la estructura para agregar contenido están dentro de `docs/`.
+La guía mínima para editar y compilar está en [STUPID.md](STUPID.md). La guía
+completa y la estructura para agregar contenido están dentro de `docs/`.
 
 ## Publicación automática
 

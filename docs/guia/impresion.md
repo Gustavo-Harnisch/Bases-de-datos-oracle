@@ -13,6 +13,9 @@ docs/*.md
    ├── MkDocs ────────────────> site/ (sitio web)
    │
    └── página unificada A4 ───> site/assets/pdf/bases-de-datos-oracle.pdf
+
+U1/presentaciones/*.ppt ───────> site/assets/pdf/presentaciones/*.pdf
+U1/codigos/*.sql ──────────────> site/assets/downloads/u1/codigos/*.sql
 ```
 
 El plugin de impresión reúne las páginas en `/imprimir/`. Esa página sirve para
@@ -30,7 +33,8 @@ Desde la raíz del repositorio:
 Requisitos:
 
 - el entorno Python con `requirements-docs.txt` instalado;
-- Google Chrome o Chromium disponible en el sistema.
+- Google Chrome o Chromium disponible en el sistema;
+- LibreOffice Impress para convertir las presentaciones a PDF.
 
 Si el navegador usa otro nombre o ruta:
 
@@ -42,6 +46,8 @@ El archivo final queda en:
 
 ```text
 site/assets/pdf/bases-de-datos-oracle.pdf
+site/assets/pdf/presentaciones/
+site/assets/downloads/u1/codigos/
 ```
 
 ## Preparar contenido para papel
@@ -50,6 +56,9 @@ site/assets/pdf/bases-de-datos-oracle.pdf
 - Usa títulos en orden (`#`, `##`, `###`) para conservar un índice legible.
 - Evita tablas demasiado anchas; en papel A4 tienen menos espacio que en la web.
 - Usa bloques de código breves o divide las líneas largas.
+- Usa `lesson-columns` y los patrones documentados en
+  [Patrones visuales y doble columna](patrones.md) para organizar pares de
+  conceptos, sintaxis y ejemplos.
 - Aplica `class="page-break"` a un elemento HTML cuando necesites comenzar una
   página nueva de forma explícita.
 

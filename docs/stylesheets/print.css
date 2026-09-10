@@ -8,6 +8,80 @@
   color: var(--md-accent-fg-color);
 }
 
+/* Patrones reutilizables para clases, guías y evaluaciones. */
+.lesson-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 1.4rem;
+  align-items: start;
+}
+
+.content-pattern {
+  --pattern-accent: #546e7a;
+  min-width: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--pattern-accent) 38%, transparent);
+  border-left: 0.3rem solid var(--pattern-accent);
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--pattern-accent) 8%, var(--md-default-bg-color));
+  break-inside: avoid;
+}
+
+.content-pattern::before {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: var(--pattern-accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.055em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  content: attr(data-title);
+}
+
+.content-pattern > :first-child {
+  margin-top: 0;
+}
+
+.content-pattern > :last-child {
+  margin-bottom: 0;
+}
+
+.content-pattern[data-pattern="concepto"] {
+  --pattern-accent: #1565c0;
+}
+
+.content-pattern[data-pattern="sintaxis"] {
+  --pattern-accent: #6a1b9a;
+}
+
+.content-pattern[data-pattern="ejemplo"] {
+  --pattern-accent: #00796b;
+}
+
+.content-pattern[data-pattern="actividad"] {
+  --pattern-accent: #ef6c00;
+}
+
+.content-pattern[data-pattern="advertencia"] {
+  --pattern-accent: #c62828;
+}
+
+.lesson-columns > .full-width {
+  grid-column: 1 / -1;
+}
+
+@media screen and (max-width: 760px) {
+  .lesson-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-columns > .full-width {
+    grid-column: auto;
+  }
+}
+
 @page {
   size: A4 portrait;
   margin: 18mm 16mm 20mm;
@@ -69,9 +143,28 @@
   img,
   pre,
   blockquote,
-  .admonition {
+  .admonition,
+  .content-pattern {
     break-inside: avoid-page;
     page-break-inside: avoid;
+  }
+
+  .lesson-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7mm;
+    margin: 4mm 0 6mm;
+  }
+
+  .content-pattern {
+    padding: 3.5mm 4mm;
+    border-color: #aeb7bd;
+    border-left-color: var(--pattern-accent);
+    background: #f7f8fa;
+  }
+
+  .content-pattern::before {
+    margin-bottom: 2mm;
+    font-size: 8pt;
   }
 
   pre,

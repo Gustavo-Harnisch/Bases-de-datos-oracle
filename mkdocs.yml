@@ -54,11 +54,15 @@ extra_css:
   - stylesheets/print.css
 
 markdown_extensions:
+  - admonition
   - attr_list
   - md_in_html
+  - pymdownx.details
+  - pymdownx.superfences
   - pymdownx.snippets:
       base_path:
         - docs
+        - .
       check_paths: true
       restrict_base_path: true
 
@@ -132,4 +136,5 @@ nav:
   - Guía:
       - Ejecutar la documentación: guia/entorno.md
       - Contenido modular: guia/modularidad.md
+      - Patrones y doble columna: guia/patrones.md
       - Generar y entregar el PDF: guia/impresion.md

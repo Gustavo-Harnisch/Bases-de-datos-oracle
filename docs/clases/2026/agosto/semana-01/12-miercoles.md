@@ -1,4 +1,4 @@
-# Clase 2: Miércoles 12 de agosto
+# Clase 2: Miércoles 12 de agosto — Lección 2
 
 **Fecha:** Miércoles 12 de agosto de 2026  
 **Semana:** 1 de 18  
@@ -16,9 +16,16 @@
 
 ## Materiales
 
-- Agregar aquí presentaciones, ejercicios, scripts SQL y enlaces relacionados.
+- <a href="../../../../../assets/downloads/u1/codigos/leccion-02.sql" download>Descargar el SQL de la lección 2</a>
+
+## Código de la lección
+
+El código se inserta desde su fuente única.
+
+```sql
+--8<-- "U1/codigos/leccion-02.sql"
+```
 
 ## Notas
 
 Espacio para registrar observaciones, tareas o acuerdos de la clase.
-

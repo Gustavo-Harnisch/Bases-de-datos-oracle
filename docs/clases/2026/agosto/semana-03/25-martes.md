@@ -1,4 +1,4 @@
-# Clase 5: Martes 25 de agosto
+# Clase 5: Martes 25 de agosto — Lección 5
 
 **Fecha:** Martes 25 de agosto de 2026  
 **Semana:** 3 de 18  
@@ -16,9 +16,14 @@
 
 ## Materiales
 
-- Agregar aquí presentaciones, ejercicios, scripts SQL y enlaces relacionados.
+- <a href="../../../../../assets/downloads/u1/codigos/leccion-05.sql" download>Descargar el SQL de la lección 5</a>
+
+## Código de la lección
+
+```sql
+--8<-- "U1/codigos/leccion-05.sql"
+```
 
 ## Notas
 
 Espacio para registrar observaciones, tareas o acuerdos de la clase.
-

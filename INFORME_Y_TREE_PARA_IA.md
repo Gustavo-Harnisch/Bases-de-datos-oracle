@@ -1,5 +1,7 @@
 # Informe para IA: portal de clases y formularios PDF
 
+> Actualizado el 1 de septiembre de 2026 después de reorganizar los materiales por unidad.
+
 ## 1. Objetivo
 
 Planificar y completar un portal docente de **Bases de datos Oracle** que permita:
@@ -34,10 +36,15 @@ El repositorio ya cuenta con:
 - publicación automática en GitHub Pages;
 - generación de un PDF general del curso;
 - estilos de impresión A4;
+- patrones visuales reutilizables y una cuadrícula de doble columna para web y PDF;
 - fragmentos Markdown reutilizables con `pymdownx.snippets`;
+- una primera clase real que demuestra teoría, ejemplos, actividad, descargas y código completo sincronizado;
 - seis presentaciones `U1/presentaciones/leccion-01.ppt` a `leccion-06.ppt` con la teoría de SQL;
 - scripts en `U1/codigos/` con explicaciones, ejemplos y tareas;
+- conversión automática de las seis presentaciones a PDF y copia automática de los SQL al compilar;
 - tres evaluaciones Word clasificadas dentro de `U1/evaluaciones/`.
+
+Al momento de esta actualización, `U1/codigos/leccion-03-parte-02.sql` tiene un ajuste local pendiente que elimina espacios finales. No cambia la lógica SQL ni agrega contenido nuevo.
 
 La mayoría de las clases todavía son plantillas con fecha, navegación, objetivos, contenidos, materiales y notas. Falta incorporar el contenido pedagógico real.
 
@@ -48,6 +55,7 @@ No existe todavía una sección pública en MkDocs para evaluaciones ni un proce
 ```text
 Bases-de-datos-oracle/
 ├── README.md
+├── STUPID.md                       # Guía rápida: editar, ver y generar PDF
 ├── .gitignore
 ├── mkdocs.yml
 ├── requirements-docs.txt
@@ -71,34 +79,67 @@ Bases-de-datos-oracle/
 │   ├── guia/
 │   │   ├── entorno.md
 │   │   ├── modularidad.md
-│   │   └── impresion.md
+│   │   ├── impresion.md
+│   │   └── patrones.md             # Tarjetas semánticas y doble columna
 │   └── stylesheets/
 │       └── print.css                 # Papel A4
 ├── overrides/
 │   ├── main.html                     # Botón para descargar el PDF
 │   └── print_site_banner.tpl
 ├── scripts/
-│   └── build-docs-pdf.sh             # Sitio + PDF general
+│   └── build-docs-pdf.sh             # Sitio + PDF general + PPT en PDF + SQL
 ├── U1/
 │   ├── README.md
-│   ├── presentaciones/                # Lecciones 1 a 6 en PPT
-│   ├── codigos/                       # SQL comentado por lección
+│   ├── presentaciones/
+│   │   ├── leccion-01.ppt
+│   │   ├── leccion-02.ppt
+│   │   ├── leccion-03.ppt
+│   │   ├── leccion-04.ppt
+│   │   ├── leccion-05.ppt
+│   │   └── leccion-06.ppt
+│   ├── codigos/
+│   │   ├── leccion-01.sql
+│   │   ├── leccion-02.sql
+│   │   ├── leccion-03.sql
+│   │   ├── leccion-03-parte-02.sql
+│   │   ├── leccion-04.sql
+│   │   ├── leccion-04-parte-02.sql
+│   │   ├── leccion-05.sql
+│   │   └── leccion-06.sql
 │   ├── evaluaciones/
 │   │   ├── README.md
-│   │   ├── es1/                       # Prueba y pauta preliminar
-│   │   └── es2/                       # Prueba regular y recuperativa
-│   └── guias/                         # Instalación y apoyo
+│   │   ├── es1/
+│   │   │   ├── es1-consultas-sql.docx
+│   │   │   └── pauta-es1-consultas-sql.sql
+│   │   └── es2/
+│   │       ├── es2-programacion-plsql.docx
+│   │       └── recuperativas/
+│   │           └── es2-programacion-plsql-recuperativa.docx
+│   └── guias/
+│       └── instalar-docker-lab.docx
 ├── U2/
 │   ├── README.md
 │   ├── ejercicios/
+│   │   ├── tarea-01.sql
+│   │   └── tarea-02.sql
 │   └── soluciones/
+│       ├── u2-c4-solucion-cacb.sql
+│       ├── u2-c4-solucion-gigh.sql
+│       ├── u2-c4-solucion-gigh-v2.sql
+│       └── u2-c4-solucion-gigh-variables-claras.sql
 ├── datos/
-│   └── oehr/                          # Scripts del esquema Oracle OEHR
+│   ├── README.md
+│   └── oehr/                          # 15 scripts del esquema Oracle OEHR
 ├── material-academico/
+│   ├── README.md
 │   ├── programa/
 │   ├── planificacion/
 │   └── normalizacion/
-└── otros/                             # Material preservado no perteneciente al curso
+└── otros/
+    ├── README.md
+    ├── bark-registro-usuarios.txt
+    ├── instrucciones-mkdocs-antiguas.txt
+    └── taller-sistemas-operativos.c
 ```
 
 Contenido que debe quedar fuera del contexto:
@@ -190,7 +231,9 @@ Página Markdown de la clase ─> contenido web accesible + bloques SQL
 
 La IA no debe limitarse a incrustar el PPT. Debe convertir su contenido en una explicación web legible, manteniendo los objetivos y conceptos relevantes. Los ejemplos deben tomarse del `.sql`, donde los comentarios presentan primero el requerimiento y luego la consulta que lo resuelve.
 
-Cada `LesNN.ppt` debe convertirse también a un PDF individual, por ejemplo `site/assets/pdf/presentaciones/leccion-NN.pdf`, y enlazarse desde la clase correspondiente. La planificación debe automatizar esa conversión —por ejemplo con LibreOffice en modo headless— tanto localmente como en GitHub Actions. El PDF de diapositivas es un material complementario; no reemplaza la página accesible en MkDocs.
+Cada `leccion-NN.ppt` se convierte también a un PDF individual, por ejemplo `site/assets/pdf/presentaciones/leccion-NN.pdf`, mediante LibreOffice en modo headless. `scripts/build-docs-pdf.sh` ya realiza esa conversión localmente y el workflow instala LibreOffice para repetirla en GitHub Actions. El PDF de diapositivas es un material complementario; no reemplaza la página accesible en MkDocs.
+
+La clase 1 ya sirve como implementación de referencia: utiliza `lesson-columns`, tarjetas identificadas por `data-pattern`, inserta el script original mediante `pymdownx.snippets` y ofrece enlaces al PDF de la presentación y al SQL descargable. Los patrones están documentados en `docs/guia/patrones.md` y el uso rápido en `STUPID.md`.
 
 Antes de publicar texto o imágenes provenientes de las presentaciones Oracle, se deben revisar los permisos de reutilización. Cuando corresponda, se debe resumir y atribuir el material en vez de copiar diapositivas completas.
 
@@ -354,15 +397,16 @@ La IA debe decidir si amplía `build-docs-pdf.sh` o crea `build-evaluations-pdf.
 El workflow actual:
 
 1. configura Python;
-2. instala dependencias;
+2. instala dependencias y LibreOffice Impress;
 3. compila MkDocs en modo estricto;
 4. genera el PDF general;
-5. guarda el PDF como artefacto;
-6. publica `site/` en GitHub Pages al integrar en `main`.
+5. convierte las seis presentaciones de U1 a PDF;
+6. copia los SQL de U1 como descargas del sitio;
+7. guarda todo `site/assets/pdf/` como artefacto;
+8. publica `site/` en GitHub Pages al integrar en `main`.
 
 El plan debe extenderlo para:
 
-- convertir las presentaciones PPT en PDF individuales;
 - generar todos los PDF de evaluaciones;
 - comprobar que cada PDF exista y sea válido;
 - guardarlos como artefactos;
@@ -393,8 +437,7 @@ Si `Proyecto final/` ya está registrado en el índice, agregarlo al `.gitignore
 8. Generar PDF independientes para pruebas y formularios.
 9. Separar versiones de estudiante y docente.
 10. Validar SQL, enlaces, navegación y archivos PDF automáticamente.
-11. Revisar diseño responsive e impresión A4.
-12. Actualizar el README con el flujo editorial.
+11. Extender la revisión responsive e impresión A4 al resto de las clases.
 
 ## 13. Fases sugeridas
 
@@ -445,6 +488,7 @@ Si `Proyecto final/` ya está registrado en el índice, agregarlo al `.gitignore
 - La compilación estricta termina sin errores.
 - GitHub Pages publica el portal.
 - El PDF general conserva el orden esperado.
+- Los patrones de concepto, sintaxis, ejemplo, actividad y advertencia conservan sus colores y la doble columna en web y PDF.
 - Cada evaluación genera un PDF independiente válido.
 - Los PDF se descargan desde el sitio.
 - Las pruebas impresas tienen encabezado, puntaje y espacio para respuestas.
@@ -474,7 +518,7 @@ RESTRICCIÓN OBLIGATORIA: ignora por completo la carpeta Proyecto final/. No la
 analices, no la incluyas en el plan, no modifiques sus archivos y considérala
 una ruta destinada a .gitignore.
 
-Inspecciona README.md, mkdocs.yml, docs/, U1/presentaciones/,
+Inspecciona README.md, STUPID.md, mkdocs.yml, docs/, U1/presentaciones/,
 U1/codigos/, U1/evaluaciones/README.md, U1/evaluaciones/,
 scripts/build-docs-pdf.sh,
 docs/stylesheets/print.css, requirements-docs.txt y .github/workflows/docs.yml.
@@ -510,6 +554,7 @@ Adjuntar:
 
 - `INFORME_Y_TREE_PARA_IA.md`;
 - `README.md`;
+- `STUPID.md`;
 - `mkdocs.yml`;
 - `requirements-docs.txt`;
 - `.gitignore`;
