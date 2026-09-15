@@ -1,0 +1,1445 @@
+\documentclass[10pt,letterpaper]{article}
+
+% Idioma, codificacion y tipografia
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\linespread{1.10}
+
+% Pagina y composicion
+\usepackage{geometry}
+\geometry{
+  letterpaper,
+  top=1.8cm,
+  bottom=1.8cm,
+  left=1.8cm,
+  right=1.8cm,
+  headheight=19pt,
+  headsep=0.45cm,
+  footskip=0.75cm
+}
+\usepackage{multicol}
+\usepackage{etoolbox}
+\setlength{\columnsep}{0.58cm}
+\setlength{\columnseprule}{0pt}
+\setlength{\multicolsep}{0.55\baselineskip}
+\setlength{\premulticols}{6\baselineskip}
+\setlength{\postmulticols}{0.35\baselineskip}
+\raggedcolumns
+
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\setlength{\emergencystretch}{1.5em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.38em}
+
+% Color, tablas y listas
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.35em,topsep=0.2em,itemsep=0.1em,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.55em,topsep=0.2em,itemsep=0.12em,parsep=0pt}
+
+% Navegacion y estilo editorial
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+
+\definecolor{azulsql}{HTML}{123B5D}
+\definecolor{azulmedio}{HTML}{176B87}
+\definecolor{turquesa}{HTML}{2A9D8F}
+\definecolor{naranjasql}{HTML}{E76F51}
+\definecolor{tintasql}{HTML}{243746}
+\definecolor{fondosuave}{HTML}{F3F7F9}
+\definecolor{fondocodigo}{HTML}{F6F8FA}
+\definecolor{bordecodigo}{HTML}{CAD6DE}
+\definecolor{comentario}{HTML}{527A28}
+\definecolor{cadena}{HTML}{9B2C53}
+\definecolor{alertafondo}{HTML}{FFF7ED}
+\definecolor{alertaborde}{HTML}{F59E0B}
+\definecolor{errorfondo}{HTML}{FFF1F0}
+\definecolor{errorborde}{HTML}{C2413B}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azulsql,
+  urlcolor=azulsql,
+  pdftitle={Glosario esencial de SQL -- Unidad 1},
+  pdfauthor={INF-324 Bases de Datos}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\fontsize{8.5}{10}\selectfont
+  \textcolor{azulsql}{\textbf{INF-324 · Bases de Datos}}}
+\rhead{\fontsize{8.5}{10}\selectfont
+  \textcolor{tintasql}{Glosario SQL · Unidad 1}}
+\cfoot{\fontsize{8.5}{10}\selectfont
+  \textcolor{tintasql}{Página \thepage}}
+\renewcommand{\headrulewidth}{0.35pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{bordecodigo}\leaders\hrule height \headrulewidth\hfill}}
+
+\titleformat{\section}
+  {\large\bfseries\color{azulsql}}
+  {\colorbox{azulsql}{\textcolor{white}{\strut\thesection}}}{0.55em}{}
+\titlespacing*{\section}{0pt}{1.15em}{0.45em}
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{azulmedio}}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{0.85em}{0.25em}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{tintasql}}
+  {\thesubsubsection}{0.45em}{}
+\titlespacing*{\subsubsection}{0pt}{0.65em}{0.2em}
+
+\lstdefinestyle{sql}{
+  language=SQL,
+  backgroundcolor=\color{fondocodigo},
+  frame=single,
+  rulecolor=\color{bordecodigo},
+  framerule=0.55pt,
+  framesep=0.35em,
+  basicstyle=\ttfamily\fontsize{10}{10.8}\selectfont\color{tintasql},
+  keywordstyle=\color{azulsql}\bfseries,
+  commentstyle=\color{comentario}\itshape,
+  stringstyle=\color{cadena},
+  showstringspaces=false,
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  tabsize=2,
+  aboveskip=0.3em,
+  belowskip=0.35em,
+  xleftmargin=0.8em,
+  xrightmargin=0.8em,
+  framexleftmargin=0.65em,
+  framexrightmargin=0.65em,
+  literate=
+    {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+    {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+    {ñ}{{\~n}}1 {Ñ}{{\~N}}1
+}
+\lstset{style=sql}
+
+\newcommand{\clause}[1]{\textcolor{azulsql}{\textbf{#1}}}
+\newcommand{\syntax}[1]{%
+  \par\noindent\begingroup\raggedright
+  \textbf{Sintaxis: }\texttt{\detokenize{#1}}\par
+  \endgroup}
+
+% Las ideas clave y objetivos se distinguen tipograficamente, sin caja.
+\newenvironment{ideaclave}[1][Idea clave]
+  {\par\smallskip\begingroup\raggedright
+   \noindent\textcolor{turquesa}{\textbf{#1.}}\enspace}
+  {\par\endgroup\smallskip}
+
+\newenvironment{objetivoleccion}
+  {\par\smallskip\noindent\color{tintasql}\small}
+  {\par\medskip}
+
+\newtcolorbox{precaucion}[1][Atención]{
+  enhanced,breakable,colback=alertafondo,colframe=alertaborde,boxrule=0.55pt,
+  arc=1.2mm,left=0.8em,right=0.8em,top=0.55em,bottom=0.55em,
+  before skip=0.65em,after skip=0.65em,
+  fonttitle=\bfseries,coltitle=white,colbacktitle=alertaborde,title=#1}
+
+\newtcolorbox{errorcritico}[1][Error crítico]{
+  enhanced,breakable,colback=errorfondo,colframe=errorborde,boxrule=0.55pt,
+  arc=1.2mm,left=0.8em,right=0.8em,top=0.55em,bottom=0.55em,
+  before skip=0.65em,after skip=0.65em,
+  fonttitle=\bfseries,coltitle=white,colbacktitle=errorborde,title=#1}
+
+% Caja reservada exclusivamente para ejemplos ejecutables seleccionados.
+\newtcblisting{sqlexample}[1][Ejemplo ejecutable]{
+  enhanced,listing only,
+  colback=fondocodigo,colframe=bordecodigo,boxrule=0.55pt,arc=1.2mm,
+  width=\textwidth,center,
+  left=0.8em,right=0.8em,top=0.4em,bottom=0.4em,
+  before skip=0.45em,after skip=0.5em,
+  title={#1},fonttitle=\bfseries\small,coltitle=white,colbacktitle=azulsql,
+  listing options={
+    style=sql,
+    frame=none,
+    xleftmargin=0pt,
+    xrightmargin=0pt,
+    framexleftmargin=0pt,
+    framexrightmargin=0pt,
+    aboveskip=0pt,
+    belowskip=0pt}}
+
+\newcommand{\important}[1]{\begin{precaucion}#1\end{precaucion}}
+
+\renewcommand{\arraystretch}{1.14}
+\setlength{\tabcolsep}{5pt}
+\newcommand{\tablerefsize}{\fontsize{9}{10.4}\selectfont}
+\AtBeginEnvironment{tabular}{\tablerefsize}
+\AtBeginEnvironment{tabularx}{\tablerefsize}
+\AtBeginEnvironment{longtable}{\tablerefsize}
+
+% Estado de la composicion teorica. Los bloques extensos suspenden las dos
+% columnas y las restauran despues, por lo que nunca quedan partidos entre
+% columnas.
+\newif\ifintheorycolumns
+\newcommand{\BeginTheory}{%
+  \ifintheorycolumns\else
+    \begin{multicols}{2}%
+    \global\intheorycolumnstrue
+  \fi}
+\newcommand{\EndTheory}{%
+  \ifintheorycolumns
+    \global\intheorycolumnsfalse
+    \end{multicols}%
+  \fi}
+
+\newif\ifresumeafterlisting
+\BeforeBeginEnvironment{lstlisting}{%
+  \ifintheorycolumns
+    \global\resumeafterlistingtrue\EndTheory
+  \else
+    \global\resumeafterlistingfalse
+  \fi
+  \par\noindent\begin{minipage}{\textwidth}}
+\AfterEndEnvironment{lstlisting}{%
+  \end{minipage}\par
+  \ifresumeafterlisting
+    \global\resumeafterlistingfalse\BeginTheory
+  \fi}
+
+\newif\ifresumeafterexample
+\BeforeBeginEnvironment{sqlexample}{%
+  \ifintheorycolumns
+    \global\resumeafterexampletrue\EndTheory
+  \else
+    \global\resumeafterexamplefalse
+  \fi}
+\AfterEndEnvironment{sqlexample}{%
+  \ifresumeafterexample
+    \global\resumeafterexamplefalse\BeginTheory
+  \fi}
+
+\newif\ifresumeafterlongtable
+\BeforeBeginEnvironment{longtable}{%
+  \ifintheorycolumns
+    \global\resumeafterlongtabletrue\EndTheory
+  \else
+    \global\resumeafterlongtablefalse
+  \fi}
+\AfterEndEnvironment{longtable}{%
+  \ifresumeafterlongtable
+    \global\resumeafterlongtablefalse\BeginTheory
+  \fi}
+
+\newif\ifresumeaftertabularx
+\BeforeBeginEnvironment{tabularx}{%
+  \ifintheorycolumns
+    \global\resumeaftertabularxtrue\EndTheory
+  \else
+    \global\resumeaftertabularxfalse
+  \fi}
+\AfterEndEnvironment{tabularx}{%
+  \ifresumeaftertabularx
+    \global\resumeaftertabularxfalse\BeginTheory
+  \fi}
+
+\newif\ifresumeaftercenter
+\BeforeBeginEnvironment{center}{%
+  \ifintheorycolumns
+    \global\resumeaftercentertrue\EndTheory
+  \else
+    \global\resumeaftercenterfalse
+  \fi}
+\AfterEndEnvironment{center}{%
+  \ifresumeaftercenter
+    \global\resumeaftercenterfalse\BeginTheory
+  \fi}
+
+\newcommand{\indiceendoscolumnas}{%
+  \begin{multicols}{2}
+    \tableofcontents
+  \end{multicols}}
+
+\newenvironment{glossarylist}
+  {\begin{description}[
+    style=unboxed,
+    leftmargin=0pt,
+    labelindent=0pt,
+    labelsep=0.45em,
+    itemsep=0.18em,
+    parsep=0pt,
+    topsep=0.2em,
+    font=\normalfont\ttfamily\bfseries]}
+  {\end{description}}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\color{tintasql}
+\noindent\colorbox{azulsql}{%
+  \parbox[c][1.05cm][c]{\dimexpr\textwidth-2\fboxsep\relax}{%
+    \centering\color{white}\bfseries\large INF-324 · BASES DE DATOS}}
+
+\vspace{2.3cm}
+{\color{turquesa}\rule{2.2cm}{4pt}}\\[0.75cm]
+{\fontsize{31}{36}\selectfont\bfseries Glosario esencial\\de SQL\par}
+\vspace{0.45cm}
+{\Large\color{azulmedio}Unidad 1 · Lecciones 1 a 6\par}
+\vspace{0.35cm}
+{\large Oracle Database · esquema OEHR\par}
+
+\vfill
+\begin{tcolorbox}[colback=fondosuave,colframe=bordecodigo,boxrule=0.5pt,
+  arc=2mm,left=1.1em,right=1.1em,top=0.9em,bottom=0.9em]
+\textbf{Propósito de esta guía}\par
+Comprender, escribir y revisar las consultas estudiadas en la Unidad 1. Cada
+tema conecta el propósito del comando con su sintaxis, un ejemplo ejecutable y
+las precauciones que evitan los errores más frecuentes.
+\end{tcolorbox}
+
+\vspace{1.2cm}
+\begin{tabularx}{\textwidth}{@{}X r@{}}
+\textbf{Material de apoyo académico} & \textbf{Edición 2026} \\
+Lecciones 1 a 6 & Consulta y práctica \\
+\end{tabularx}
+\vspace{0.35cm}
+{\color{naranjasql}\rule{\textwidth}{2pt}}
+\end{titlepage}
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\BeginTheory
+
+\section*{Cómo utilizar esta guía}
+
+Esta guía reúne las cláusulas, operadores y funciones trabajados en las seis
+lecciones de la Unidad 1. Los ejemplos están escritos para Oracle Database y
+el conjunto de datos OEHR. Puede utilizarse de dos maneras:
+
+\begin{itemize}
+  \item \textbf{Lectura progresiva:} seguir las lecciones en orden para construir
+        consultas cada vez más completas.
+  \item \textbf{Consulta rápida:} buscar un término en el índice o en el
+        glosario alfabético final.
+\end{itemize}
+
+\begin{ideaclave}[Cómo leer cada tema]
+Primero identifique \textbf{qué problema resuelve} el comando; luego observe su
+\textbf{sintaxis}; finalmente, ejecute el \textbf{ejemplo} y cambie una condición
+para comprobar cómo varía el resultado. Las cajas naranjas señalan errores que
+conviene anticipar.
+\end{ideaclave}
+
+\begin{precaucion}[Convención de tablas]
+Los materiales del repositorio usan nombres como
+\texttt{OEHR\_EMPLOYEES}. Si se trabaja con el esquema estándar HR, la tabla
+equivalente se escribe \texttt{HR.EMPLOYEES}. Elija una convención y manténgala
+en toda la consulta; no mezcle ambos nombres.
+\end{precaucion}
+
+\rowcolors{2}{fondosuave}{white}
+\begin{center}
+\begin{tabular}{ll}
+\rowcolor{azulsql}
+\textcolor{white}{\textbf{Tablas del repositorio}} &
+\textcolor{white}{\textbf{Equivalente en el esquema HR}} \\
+\texttt{OEHR\_EMPLOYEES}   & \texttt{HR.EMPLOYEES} \\
+\texttt{OEHR\_DEPARTMENTS} & \texttt{HR.DEPARTMENTS} \\
+\texttt{OEHR\_JOBS}        & \texttt{HR.JOBS} \\
+\texttt{OEHR\_LOCATIONS}   & \texttt{HR.LOCATIONS} \\
+\texttt{OEHR\_COUNTRIES}   & \texttt{HR.COUNTRIES} \\
+\texttt{OEHR\_REGIONS}     & \texttt{HR.REGIONS} \\
+\end{tabular}
+\end{center}
+\rowcolors{2}{}{}
+
+\EndTheory
+\clearpage
+\indiceendoscolumnas
+\clearpage
+\pagenumbering{arabic}
+\BeginTheory
+
+\section{Mapa rápido de la unidad}
+
+Antes de estudiar comandos aislados, conviene reconocer la progresión de la
+unidad: primero se recuperan filas, luego se transforman y agrupan y, por
+último, se relacionan varias tablas.
+
+\rowcolors{2}{fondosuave}{white}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{1.5cm} X}
+\rowcolor{azulsql}
+\textcolor{white}{Lección} & \textcolor{white}{Contenidos principales} \\
+1 & \lstinline|SELECT|, \lstinline|FROM|, \lstinline|DESCRIBE|, expresiones
+aritméticas, alias, concatenación y \lstinline|DISTINCT|. \\
+2 & \lstinline|WHERE|, operadores de comparación y lógicos,
+\lstinline|BETWEEN|, \lstinline|IN|, \lstinline|LIKE|,
+\lstinline|IS NULL| y \lstinline|ORDER BY|. \\
+3 & Funciones de texto, funciones numéricas, tabla \lstinline|DUAL|,
+\lstinline|SYSDATE|, aritmética y funciones de fecha. \\
+4 & Conversión de tipos, formatos de fecha y número, funciones para nulos y
+expresiones condicionales. \\
+5 & Funciones de grupo, \lstinline|GROUP BY| y \lstinline|HAVING|. \\
+6 & Alias de tabla, productos cartesianos y combinaciones con
+\lstinline|JOIN|, \lstinline|ON| y \lstinline|USING|. \\
+\end{tabularx}
+\rowcolors{2}{}{}
+
+\section{Anatomía de una consulta}
+
+Cuando las cláusulas se utilizan juntas, su orden de escritura es estricto:
+
+\begin{lstlisting}
+SELECT   columnas o expresiones
+FROM     tabla principal
+JOIN     otra tabla
+  ON     condicion de union
+WHERE    condiciones sobre filas
+GROUP BY columnas de agrupacion
+HAVING   condiciones sobre grupos
+ORDER BY columnas de ordenamiento;
+\end{lstlisting}
+
+\begin{ideaclave}[Regla de lectura]
+Lea una consulta en dos direcciones: \textbf{de arriba abajo} para reconocer lo
+que está escrito y desde \textbf{FROM/JOIN hacia SELECT} para comprender cómo se
+construye el resultado. Esta segunda lectura explica qué datos existen en cada
+etapa.
+\end{ideaclave}
+
+No todas son obligatorias. En una consulta común, \lstinline|SELECT| indica qué
+se mostrará y \lstinline|FROM| indica de dónde se obtendrán los datos. Las otras
+cláusulas se agregan solo cuando son necesarias. Puede haber varios
+\lstinline|JOIN|, cada uno con su propia condición.
+
+\begin{sqlexample}[Consulta completa: selección, unión, filtro y orden]
+SELECT e.employee_id,
+       e.first_name,
+       d.department_name
+FROM oehr_employees e
+JOIN oehr_departments d
+  ON e.department_id = d.department_id
+WHERE d.department_name = 'IT'
+ORDER BY e.last_name;
+\end{sqlexample}
+
+\subsection{Orden de escritura y orden lógico}
+
+El orden en que Oracle procesa conceptualmente una consulta no es el mismo en
+que se escribe. Esta diferencia ayuda a comprender por qué, por ejemplo,
+\lstinline|WHERE| no puede usar una función de grupo.
+
+\begin{center}
+\begin{tabular}{cll}
+\toprule
+\rowcolor{azulsql}
+\textcolor{white}{\textbf{Paso}} & \textcolor{white}{\textbf{Escritura}} &
+\textcolor{white}{\textbf{Procesamiento lógico simplificado}} \\
+\midrule
+1 & \lstinline|SELECT| & \lstinline|FROM| y \lstinline|JOIN| \\
+2 & \lstinline|FROM| & \lstinline|WHERE| \\
+3 & \lstinline|JOIN ... ON| & \lstinline|GROUP BY| \\
+4 & \lstinline|WHERE| & \lstinline|HAVING| \\
+5 & \lstinline|GROUP BY| & \lstinline|SELECT| \\
+6 & \lstinline|HAVING| & \lstinline|ORDER BY| \\
+7 & \lstinline|ORDER BY| & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Lección 1: recuperación básica de datos}
+
+\begin{objetivoleccion}
+\textbf{Objetivo de aprendizaje.} Recuperar columnas de una tabla, calcular
+expresiones y presentar encabezados y textos comprensibles sin modificar los
+datos almacenados.
+\end{objetivoleccion}
+
+\subsection{SELECT y FROM}
+
+\clause{SELECT} elige columnas o calcula expresiones. \clause{FROM} señala la
+tabla que contiene los datos.
+
+\syntax{SELECT columna_1, columna_2 FROM nombre_tabla;}
+
+\begin{lstlisting}
+SELECT employee_id, first_name, salary
+FROM oehr_employees;
+\end{lstlisting}
+
+El asterisco obtiene todas las columnas. Es útil para explorar, pero en reportes
+conviene escribir únicamente las columnas necesarias.
+
+\begin{lstlisting}
+SELECT *
+FROM oehr_departments;
+\end{lstlisting}
+
+\subsection{DESCRIBE o DESC}
+
+Muestra la estructura de una tabla: columnas, tipos de datos y posibilidad de
+valores nulos. Es un comando del cliente de Oracle, no una consulta
+\lstinline|SELECT|.
+
+\syntax{DESCRIBE nombre_tabla;}
+
+\begin{lstlisting}
+DESCRIBE oehr_locations;
+-- Forma abreviada:
+DESC oehr_locations;
+\end{lstlisting}
+
+\subsection{Expresiones aritméticas}
+
+Se pueden usar \lstinline|+|, \lstinline|-|, \lstinline|*| y
+\lstinline|/| dentro de \lstinline|SELECT|. La multiplicación y la división se
+evalúan antes que la suma y la resta; los paréntesis permiten controlar el
+orden.
+
+\syntax{SELECT expresion_aritmetica AS alias FROM nombre_tabla;}
+
+\begin{sqlexample}[Ejemplo ejecutable: expresiones aritméticas]
+SELECT employee_id,
+       salary,
+       salary * 12 AS salario_anual,
+       (salary + 57) * 12 AS anual_con_bono_mensual,
+       (salary * 12) + 57 AS anual_con_bono_anual
+FROM oehr_employees;
+\end{sqlexample}
+
+Si una expresión opera con \lstinline|NULL|, su resultado también será
+\lstinline|NULL|. Más adelante se puede usar \lstinline|NVL| para sustituirlo.
+
+\subsection{Alias de columna}
+
+Un alias cambia el encabezado mostrado, pero no modifica la tabla. Las comillas
+dobles permiten conservar espacios, acentos y mayúsculas exactas.
+
+\syntax{expresion AS "Encabezado visible"}
+
+\begin{lstlisting}
+SELECT employee_id AS "COD_EMPLEADO",
+       first_name AS "Nombre",
+       salary * 12 AS "Sueldo anual"
+FROM oehr_employees;
+\end{lstlisting}
+
+\subsection{Concatenación y texto literal}
+
+El operador \lstinline@||@ une valores de texto. Los textos literales se
+escriben entre comillas simples.
+
+\syntax{expresion_1 || ' texto ' || expresion_2}
+
+\begin{lstlisting}
+SELECT employee_id,
+       first_name || ' ' || last_name AS nombre_completo,
+       'El empleado ' || first_name || ' tiene el cargo ' || job_id AS reporte
+FROM oehr_employees;
+\end{lstlisting}
+
+\subsection{DISTINCT}
+
+Elimina filas duplicadas del resultado según el conjunto de columnas elegido.
+
+\syntax{SELECT DISTINCT columna_1, columna_2 FROM nombre_tabla;}
+
+\begin{lstlisting}
+SELECT DISTINCT job_id
+FROM oehr_employees;
+\end{lstlisting}
+
+\section{Lección 2: filtrar y ordenar}
+
+\begin{objetivoleccion}
+\textbf{Objetivo de aprendizaje.} Restringir filas mediante condiciones,
+combinar criterios de búsqueda y controlar el orden del resultado final.
+\end{objetivoleccion}
+
+\subsection{WHERE y operadores de comparación}
+
+\clause{WHERE} conserva únicamente las filas que cumplen una condición.
+
+\syntax{SELECT columnas FROM tabla WHERE condicion;}
+
+\begin{center}
+\begin{tabular}{cl@{\hspace{2cm}}cl}
+\toprule
+\rowcolor{azulsql}
+\textcolor{white}{\textbf{Operador}} & \textcolor{white}{\textbf{Significado}} &
+\textcolor{white}{\textbf{Operador}} & \textcolor{white}{\textbf{Significado}} \\
+\midrule
+\lstinline|=|  & igual & \lstinline|<>| o \lstinline|!=| & distinto \\
+\lstinline|>|  & mayor que & \lstinline|>=| & mayor o igual \\
+\lstinline|<|  & menor que & \lstinline|<=| & menor o igual \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{lstlisting}
+SELECT employee_id, last_name, salary
+FROM oehr_employees
+WHERE salary >= 5000;
+\end{lstlisting}
+
+Las cadenas distinguen mayúsculas y minúsculas y se escriben entre comillas
+simples. Para fechas es preferible un literal ANSI, pues no depende del formato
+regional configurado en la sesión.
+
+\begin{lstlisting}
+SELECT employee_id, last_name, hire_date
+FROM oehr_employees
+WHERE hire_date >= DATE '2016-01-01';
+\end{lstlisting}
+
+\subsection{AND, OR y NOT}
+
+\lstinline|AND| exige que ambas condiciones sean verdaderas;
+\lstinline|OR| exige al menos una; \lstinline|NOT| niega una condición. Oracle
+evalúa \lstinline|NOT|, después \lstinline|AND| y finalmente \lstinline|OR|.
+Los paréntesis hacen explícita la intención.
+
+\syntax{WHERE (condicion_1 OR condicion_2) AND condicion_3}
+
+\begin{sqlexample}[Ejemplo ejecutable: condiciones combinadas]
+SELECT employee_id, last_name, department_id, salary
+FROM oehr_employees
+WHERE (department_id = 50 OR department_id = 80)
+  AND salary >= 5000;
+\end{sqlexample}
+
+\subsection{BETWEEN y NOT BETWEEN}
+
+Busca dentro o fuera de un rango inclusivo: considera ambos límites.
+
+\syntax{WHERE columna [NOT] BETWEEN limite_inferior AND limite_superior}
+
+\begin{lstlisting}
+SELECT employee_id, last_name, salary
+FROM oehr_employees
+WHERE salary BETWEEN 3000 AND 5000;
+\end{lstlisting}
+
+\begin{lstlisting}
+SELECT employee_id, last_name, hire_date
+FROM oehr_employees
+WHERE hire_date NOT BETWEEN DATE '2015-01-01' AND DATE '2020-12-31';
+\end{lstlisting}
+
+\subsection{IN y NOT IN}
+
+Compara una columna con una lista de valores. Es una forma clara de expresar
+varias comparaciones unidas mediante \lstinline|OR|.
+
+\syntax{WHERE columna [NOT] IN (valor_1, valor_2, valor_3)}
+
+\begin{lstlisting}
+SELECT employee_id, last_name, department_id
+FROM oehr_employees
+WHERE department_id IN (50, 80, 90);
+\end{lstlisting}
+
+\begin{lstlisting}
+SELECT employee_id, last_name, manager_id
+FROM oehr_employees
+WHERE manager_id NOT IN (100, 114, 120, 121);
+\end{lstlisting}
+
+\important{Si la lista de \texttt{NOT IN} contiene un valor
+\texttt{NULL}, el resultado puede no devolver filas debido a la lógica de
+tres valores de SQL. En ese caso se debe revisar el origen de la lista.}
+
+\subsection{LIKE y comodines}
+
+\lstinline|LIKE| compara patrones de texto. El símbolo \lstinline|%| representa
+cero o más caracteres y \lstinline|_| representa exactamente un carácter.
+
+\syntax{WHERE columna [NOT] LIKE 'patron'}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\rowcolor{azulsql}
+\textcolor{white}{\textbf{Patrón}} & \textcolor{white}{\textbf{Significado}} \\
+\midrule
+\lstinline|'S%'| & comienza con S \\
+\lstinline|'%a'| & termina con a \\
+\lstinline|'%an%'| & contiene an \\
+\lstinline|'_a%s'| & la segunda letra es a y termina con s \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{lstlisting}
+SELECT employee_id, last_name
+FROM oehr_employees
+WHERE last_name LIKE 'S%'
+   OR last_name LIKE '%a';
+\end{lstlisting}
+
+Para buscar literalmente un guion bajo o un porcentaje se puede definir un
+carácter de escape:
+
+\begin{lstlisting}
+SELECT employee_id, job_id
+FROM oehr_employees
+WHERE job_id LIKE '%SA\_%' ESCAPE '\';
+\end{lstlisting}
+
+\important{\texttt{= 'E\%'} busca exactamente los dos caracteres
+\texttt{E\%}. Para buscar textos que comienzan con E se debe usar
+\texttt{LIKE 'E\%'}. Aun así, el resultado será vacío si los datos unidos no
+contienen un país que comience con esa letra.}
+
+\subsection{IS NULL e IS NOT NULL}
+
+\lstinline|NULL| representa un valor ausente o desconocido. No se compara con
+\lstinline|=| ni con \lstinline|<>|.
+
+\syntax{WHERE columna IS [NOT] NULL}
+
+\begin{lstlisting}
+SELECT employee_id, last_name, commission_pct
+FROM oehr_employees
+WHERE commission_pct IS NULL;
+\end{lstlisting}
+
+\begin{lstlisting}
+SELECT employee_id, last_name, commission_pct
+FROM oehr_employees
+WHERE commission_pct IS NOT NULL;
+\end{lstlisting}
+
+\subsection{ORDER BY}
+
+Ordena el resultado. \lstinline|ASC| es ascendente y es el valor por defecto;
+\lstinline|DESC| es descendente. Se puede ordenar por una columna, un alias, una
+expresión o la posición de una columna del \lstinline|SELECT|.
+
+\syntax{ORDER BY columna_1 [ASC|DESC], columna_2 [ASC|DESC];}
+
+\begin{lstlisting}
+SELECT employee_id, last_name, department_id, hire_date
+FROM oehr_employees
+ORDER BY department_id ASC, hire_date DESC;
+\end{lstlisting}
+
+Aunque \lstinline|ORDER BY 2| es válido, usar el nombre o el alias suele ser más
+claro y resiste mejor los cambios en la lista de columnas.
+
+\section{Lección 3: funciones de una sola fila}
+
+Estas funciones producen un resultado por cada fila de entrada.
+
+\begin{objetivoleccion}
+\textbf{Objetivo de aprendizaje.} Transformar textos, números y fechas fila a
+fila, sin perder de vista el tipo de dato que recibe y devuelve cada función.
+\end{objetivoleccion}
+
+\begin{ideaclave}[Cómo interpretar una función]
+En \texttt{FUNCION(argumento)}, Oracle evalúa el argumento de cada fila y
+devuelve un valor. Las funciones pueden anidarse: la más interna se ejecuta
+primero y su resultado alimenta a la siguiente.
+\end{ideaclave}
+
+\subsection{Funciones de texto}
+
+\begin{longtable}{>{\ttfamily}p{3.1cm} p{5.7cm} p{6.1cm}}
+\toprule
+\rowcolor{azulsql}
+\normalfont\textcolor{white}{\textbf{Función}} &
+\textcolor{white}{\textbf{Propósito}} & \textcolor{white}{\textbf{Ejemplo}} \\
+\midrule
+\endhead
+UPPER & Convierte a mayúsculas. & \lstinline|UPPER(last_name)| \\
+LOWER & Convierte a minúsculas. & \lstinline|LOWER(email)| \\
+INITCAP & Coloca en mayúscula la inicial de cada palabra. &
+\lstinline|INITCAP(first_name)| \\
+CONCAT & Une dos valores. Para más valores debe anidarse o usarse
+\lstinline@||@. & \lstinline|CONCAT(first_name, last_name)| \\
+LENGTH & Cuenta caracteres. & \lstinline|LENGTH(last_name)| \\
+SUBSTR & Extrae una parte desde una posición y con una longitud opcional. &
+\lstinline|SUBSTR(first_name, 1, 1)| \\
+INSTR & Devuelve la posición de una cadena dentro de otra; cero si no existe. &
+\lstinline|INSTR(last_name, 'a')| \\
+TRIM & Elimina caracteres en los extremos; por defecto, espacios. &
+\lstinline|TRIM('  texto  ')| \\
+LPAD & Completa a la izquierda hasta una longitud. &
+\lstinline|LPAD(employee_id, 6, '0')| \\
+RPAD & Completa a la derecha hasta una longitud. &
+\lstinline|RPAD(first_name, 20, '.')| \\
+REPLACE & Sustituye apariciones de un texto. &
+\lstinline|REPLACE(phone_number, '.', '-')| \\
+\bottomrule
+\end{longtable}
+
+Ejemplo combinado:
+
+\begin{sqlexample}[Ejemplo ejecutable: funciones de texto]
+SELECT employee_id,
+       UPPER(first_name || ' ' || last_name) AS nombre,
+       LENGTH(last_name) AS letras,
+       INSTR(LOWER(last_name), 'a') AS posicion_a
+FROM oehr_employees
+WHERE SUBSTR(last_name, -1, 1) = 'n';
+\end{sqlexample}
+
+\subsection{Funciones numéricas y DUAL}
+
+\lstinline|ROUND(numero, n)| redondea; \lstinline|TRUNC(numero, n)| corta sin
+redondear; \lstinline|MOD(a, b)| devuelve el resto de dividir \emph{a} por
+\emph{b}. \lstinline|DUAL| es una tabla especial de Oracle útil para evaluar
+expresiones sin consultar una tabla de negocio.
+
+\syntax{ROUND(numero, decimales) | TRUNC(numero, decimales) | MOD(a, b)}
+
+\begin{lstlisting}
+SELECT ROUND(45.5674, 2) AS redondeado,
+       TRUNC(45.5674, 2) AS truncado,
+       MOD(54, 3) AS resto
+FROM dual;
+\end{lstlisting}
+
+El separador decimal escrito en SQL suele ser el punto. La forma correcta de
+\lstinline|MOD| recibe dos argumentos: \lstinline|MOD(54, 3)|.
+
+\subsection{SYSDATE y aritmética de fechas}
+
+\lstinline|SYSDATE| devuelve la fecha y hora actuales del servidor Oracle. No
+lleva paréntesis.
+
+\syntax{SELECT SYSDATE FROM DUAL;}
+
+\begin{lstlisting}
+SELECT SYSDATE
+FROM dual;
+\end{lstlisting}
+
+En Oracle, sumar o restar un número a una fecha suma o resta días. La diferencia
+entre dos fechas produce una cantidad de días.
+
+\begin{lstlisting}
+SELECT SYSDATE + 1 AS manana,
+       SYSDATE - 7 AS hace_una_semana
+FROM dual;
+\end{lstlisting}
+
+\begin{lstlisting}
+SELECT employee_id,
+       hire_date,
+       TRUNC(SYSDATE - hire_date) AS dias_trabajados,
+       TRUNC((SYSDATE - hire_date) / 7) AS semanas_trabajadas
+FROM oehr_employees;
+\end{lstlisting}
+
+\important{Una columna \texttt{DATE} también almacena hora. Por eso
+\texttt{fecha = SYSDATE} rara vez encuentra una fila: tendrían que coincidir
+fecha y hora. Para comparar solo el día puede usarse
+\texttt{TRUNC(fecha) = TRUNC(SYSDATE)}.}
+
+\subsection{Funciones de fecha}
+
+\begin{longtable}{>{\ttfamily}p{4.5cm} p{10.3cm}}
+\toprule
+\rowcolor{azulsql}
+\normalfont\textcolor{white}{\textbf{Función}} &
+\textcolor{white}{\textbf{Descripción}} \\
+\midrule
+\endhead
+MONTHS\_BETWEEN(f1,f2) & Cantidad de meses entre dos fechas; devuelve un número. \\
+ADD\_MONTHS(fecha,n) & Suma o resta meses a una fecha. \\
+NEXT\_DAY(fecha,día) & Devuelve la siguiente ocurrencia del día indicado. El
+idioma del nombre depende de \lstinline|NLS_DATE_LANGUAGE|. \\
+LAST\_DAY(fecha) & Devuelve el último día del mes de la fecha. \\
+ROUND(fecha,formato) & Redondea una fecha a la unidad indicada. \\
+TRUNC(fecha,formato) & Trunca una fecha a la unidad indicada; sin formato quita
+la hora. \\
+\bottomrule
+\end{longtable}
+
+\begin{lstlisting}
+SELECT employee_id,
+       hire_date,
+       MONTHS_BETWEEN(SYSDATE, hire_date) AS meses,
+       ADD_MONTHS(hire_date, 6) AS revision,
+       NEXT_DAY(hire_date, 'MONDAY') AS lunes_siguiente,
+       LAST_DAY(hire_date) AS fin_de_mes
+FROM oehr_employees;
+\end{lstlisting}
+
+\section{Lección 4: conversiones, nulos y condiciones}
+
+\begin{objetivoleccion}
+\textbf{Objetivo de aprendizaje.} Convertir datos de forma explícita, controlar
+la presentación de fechas y números, tratar valores nulos y producir resultados
+condicionales.
+\end{objetivoleccion}
+
+\subsection{TO\_CHAR para fechas}
+
+Convierte una fecha a texto utilizando un modelo de formato.
+
+\syntax{TO_CHAR(fecha, 'modelo_de_formato')}
+
+\begin{center}
+\begin{tabular}{ll@{\hspace{1.4cm}}ll}
+\toprule
+\rowcolor{azulsql}
+\textcolor{white}{\textbf{Formato}} & \textcolor{white}{\textbf{Significado}} &
+\textcolor{white}{\textbf{Formato}} & \textcolor{white}{\textbf{Significado}} \\
+\midrule
+\lstinline|DD| & día del mes & \lstinline|MM| & mes numérico \\
+\lstinline|MONTH| & nombre del mes & \lstinline|YYYY| & año de cuatro dígitos \\
+\lstinline|DAY| & nombre del día & \lstinline|HH24| & hora de 00 a 23 \\
+\lstinline|MI| & minutos & \lstinline|SS| & segundos \\
+\lstinline|MON| & mes abreviado & \lstinline|DY| & día abreviado \\
+\lstinline|YEAR| & año escrito en letras & \lstinline|AM / PM| & indicador de meridiano \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{lstlisting}
+SELECT TO_CHAR(SYSDATE, 'DD/MM/YYYY HH24:MI:SS') AS fecha_hora,
+       TO_CHAR(SYSDATE, 'DAY DD "DE" MONTH "DE" YYYY') AS fecha_larga
+FROM dual;
+\end{lstlisting}
+
+El modificador \lstinline|FM| elimina espacios y ceros de relleno agregados por
+algunos formatos. El texto escrito entre comillas dobles dentro del modelo se
+reproduce literalmente.
+
+\begin{lstlisting}
+SELECT TO_CHAR(SYSDATE, 'FMDAY DD "DE" MONTH "DE" YYYY')
+FROM dual;
+\end{lstlisting}
+
+\subsection{TO\_CHAR para números}
+
+Convierte un número en texto con el formato de presentación solicitado.
+
+\syntax{TO_CHAR(numero, 'modelo_de_formato')}
+
+En los modelos numéricos, \lstinline|9| reserva una posición opcional,
+\lstinline|0| obliga a mostrar un cero, \lstinline|,| y \lstinline|.| representan
+separadores y \lstinline|$| imprime el símbolo indicado. La configuración NLS
+de la sesión puede influir en algunos separadores y símbolos monetarios.
+
+\begin{lstlisting}
+SELECT employee_id,
+       TO_CHAR(salary, '$999,999.99') AS sueldo_formateado
+FROM oehr_employees;
+\end{lstlisting}
+
+El resultado de \lstinline|TO_CHAR| es texto. Sirve para presentar datos, no
+para continuar cálculos numéricos.
+
+\subsection{TO\_NUMBER y TO\_DATE}
+
+\lstinline|TO_NUMBER| convierte texto a número y \lstinline|TO_DATE| convierte
+texto a fecha usando el formato indicado.
+
+\syntax{TO_NUMBER(texto, 'formato') | TO_DATE(texto, 'formato')}
+
+\begin{lstlisting}
+SELECT TO_NUMBER('2026', '9999') AS anio,
+       TO_DATE('11/09/2026', 'DD/MM/YYYY') AS fecha
+FROM dual;
+\end{lstlisting}
+
+Cuando una fecha es fija, el literal ANSI suele ser más claro:
+
+\begin{lstlisting}
+SELECT DATE '2026-09-11' AS fecha
+FROM dual;
+\end{lstlisting}
+
+Se deben evitar conversiones implícitas como \lstinline|hire_date > '01/01/2016'|,
+porque dependen de la configuración regional y pueden fallar o interpretarse de
+forma distinta.
+
+\subsection{NVL, NVL2, NULLIF y COALESCE}
+
+Estas funciones permiten decidir qué valor devolver cuando un dato es nulo o
+cuando dos expresiones resultan iguales.
+
+\begin{longtable}{>{\ttfamily}p{4.3cm} p{10.4cm}}
+\toprule
+\rowcolor{azulsql}
+\normalfont\textcolor{white}{\textbf{Función}} &
+\textcolor{white}{\textbf{Resultado}} \\
+\midrule
+\endhead
+NVL(valor,reemplazo) & Devuelve el reemplazo cuando el valor es
+\lstinline|NULL|; en caso contrario devuelve el valor original. \\
+NVL2(v,no\_nulo,nulo) & Elige entre dos resultados según el valor
+sea o no nulo. \\
+NULLIF(a,b) & Devuelve \lstinline|NULL| si \emph{a} y \emph{b} son iguales; si
+no, devuelve \emph{a}. \\
+COALESCE(a,b,c,...) & Devuelve el primer argumento que no sea
+\lstinline|NULL|. \\
+\bottomrule
+\end{longtable}
+
+\begin{lstlisting}
+SELECT employee_id,
+       NVL(commission_pct, 0) AS comision,
+       NVL2(commission_pct, 'CON COMISION', 'SIN COMISION') AS estado
+FROM oehr_employees;
+\end{lstlisting}
+
+\begin{lstlisting}
+SELECT NULLIF(10, 10) AS resultado_nulo,
+       COALESCE(NULL, NULL, 'Primer valor disponible') AS resultado
+FROM dual;
+\end{lstlisting}
+
+Los posibles resultados de \lstinline|NVL| y las alternativas de
+\lstinline|NVL2| deben ser de tipos compatibles.
+
+\subsection{CASE y DECODE}
+
+\lstinline|CASE| expresa condiciones de manera legible. \lstinline|DECODE| es
+una función propia de Oracle para comparaciones por igualdad; cuando la lógica
+es más compleja suele preferirse \lstinline|CASE|.
+
+\syntax{CASE WHEN condicion THEN resultado ELSE alternativa END}
+
+\begin{sqlexample}[Ejemplo ejecutable: expresión CASE]
+SELECT employee_id,
+       salary,
+       CASE
+         WHEN salary >= 10000 THEN 'ALTO'
+         WHEN salary >= 5000  THEN 'MEDIO'
+         ELSE 'BAJO'
+       END AS nivel_sueldo
+FROM oehr_employees;
+\end{sqlexample}
+
+\begin{lstlisting}
+SELECT employee_id,
+       DECODE(department_id,
+              50, 'Shipping',
+              80, 'Sales',
+              'Otro') AS area
+FROM oehr_employees;
+\end{lstlisting}
+
+\section{Lección 5: funciones de grupo}
+
+Las funciones de grupo producen un resultado por conjunto de filas e ignoran
+valores \lstinline|NULL|, excepto \lstinline|COUNT(*)|, que cuenta filas.
+
+\begin{objetivoleccion}
+\textbf{Objetivo de aprendizaje.} Resumir conjuntos de filas mediante totales,
+promedios, extremos y conteos; después, formar y filtrar grupos correctamente.
+\end{objetivoleccion}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\rowcolor{azulsql}
+\textcolor{white}{\textbf{Función}} & \textcolor{white}{\textbf{Propósito}} \\
+\midrule
+\lstinline|AVG(expresion)| & promedio \\
+\lstinline|SUM(expresion)| & suma \\
+\lstinline|MIN(expresion)| & mínimo \\
+\lstinline|MAX(expresion)| & máximo \\
+\lstinline|COUNT(expresion)| & cantidad de valores no nulos \\
+\lstinline|COUNT(*)| & cantidad de filas \\
+\lstinline|COUNT(DISTINCT expresion)| & cantidad de valores distintos no nulos \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{lstlisting}
+SELECT ROUND(AVG(salary), 0) AS promedio,
+       SUM(salary) AS total,
+       MIN(hire_date) AS primera_contratacion,
+       MAX(hire_date) AS ultima_contratacion,
+       COUNT(*) AS empleados
+FROM oehr_employees;
+\end{lstlisting}
+
+\subsection{GROUP BY}
+
+Forma grupos. Toda expresión del \lstinline|SELECT| que no esté dentro de una
+función de grupo debe aparecer en \lstinline|GROUP BY|.
+
+\syntax{SELECT columna, FUNCION_GRUPO(...) FROM tabla GROUP BY columna;}
+
+\begin{lstlisting}
+SELECT department_id,
+       job_id,
+       TO_CHAR(SUM(salary), '$999,999.99') AS total_sueldos
+FROM oehr_employees
+GROUP BY department_id, job_id
+ORDER BY department_id;
+\end{lstlisting}
+
+\subsection{WHERE frente a HAVING}
+
+\lstinline|WHERE| filtra filas antes de agrupar. \lstinline|HAVING| filtra los
+grupos ya calculados y puede usar funciones de grupo.
+
+\syntax{WHERE condicion_de_fila GROUP BY columnas HAVING condicion_de_grupo}
+
+\begin{sqlexample}[Ejemplo ejecutable: agrupación y filtro de grupos]
+SELECT department_id,
+       MAX(salary) AS sueldo_maximo
+FROM oehr_employees
+WHERE department_id BETWEEN 50 AND 90
+GROUP BY department_id
+HAVING MAX(salary) > 10000
+ORDER BY department_id DESC;
+\end{sqlexample}
+
+No es válido escribir \lstinline|WHERE MAX(salary) > 10000| porque el máximo
+todavía no existe en la etapa donde se ejecuta \lstinline|WHERE|.
+
+\section{Lección 6: consultas multitabla}
+
+\begin{objetivoleccion}
+\textbf{Objetivo de aprendizaje.} Relacionar tablas mediante sus claves,
+calificar columnas con alias y elegir el tipo de combinación que conserva las
+filas necesarias para el reporte.
+\end{objetivoleccion}
+
+\subsection{Idea central del JOIN}
+
+Un \lstinline|JOIN| no modifica ni mezcla físicamente las tablas. Construye un
+resultado temporal relacionando filas. La condición de \lstinline|ON| suele
+comparar una clave foránea con la clave primaria correspondiente.
+
+\syntax{FROM tabla_a a JOIN tabla_b b ON a.clave_foranea = b.clave_primaria}
+
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.first_name,
+       d.department_name
+FROM oehr_employees e
+JOIN oehr_departments d
+  ON e.department_id = d.department_id;
+\end{lstlisting}
+
+Los alias \lstinline|e| y \lstinline|d| hacen la consulta más corta y evitan
+ambigüedad cuando dos tablas contienen columnas con el mismo nombre.
+
+\subsection{Camino entre varias tablas}
+
+Para obtener el país y la región de un empleado se sigue la relación del modelo:
+
+\begin{center}
+\texttt{EMPLOYEES} $\rightarrow$ \texttt{DEPARTMENTS} $\rightarrow$
+\texttt{LOCATIONS} $\rightarrow$ \texttt{COUNTRIES} $\rightarrow$
+\texttt{REGIONS}
+\end{center}
+
+\begin{sqlexample}[Ejemplo ejecutable: recorrido entre cinco tablas]
+SELECT e.employee_id AS "ID empleado",
+       e.first_name AS "Nombre",
+       c.country_name AS "Pais",
+       l.city AS "Ciudad",
+       r.region_name AS "Region"
+FROM oehr_employees e
+JOIN oehr_departments d
+  ON e.department_id = d.department_id
+JOIN oehr_locations l
+  ON d.location_id = l.location_id
+JOIN oehr_countries c
+  ON l.country_id = c.country_id
+JOIN oehr_regions r
+  ON c.region_id = r.region_id
+ORDER BY e.last_name;
+\end{sqlexample}
+
+Para conocer qué países existen realmente en ese resultado antes de filtrar:
+
+\begin{lstlisting}
+SELECT DISTINCT c.country_name
+FROM oehr_employees e
+JOIN oehr_departments d
+  ON e.department_id = d.department_id
+JOIN oehr_locations l
+  ON d.location_id = l.location_id
+JOIN oehr_countries c
+  ON l.country_id = c.country_id
+ORDER BY c.country_name;
+\end{lstlisting}
+
+\subsection{ON y USING}
+
+\lstinline|ON| permite escribir cualquier condición de unión y es la forma más
+explícita. \lstinline|USING| se puede usar cuando la columna relacionada tiene
+el mismo nombre en ambas tablas.
+
+\syntax{tabla_a JOIN tabla_b USING (columna_comun)}
+
+\begin{lstlisting}
+SELECT l.city, d.department_name
+FROM oehr_locations l
+JOIN oehr_departments d USING (location_id);
+\end{lstlisting}
+
+La columna escrita dentro de \lstinline|USING| no debe llevar alias dentro de la
+lista: se escribe \lstinline|USING (location_id)|, no
+\lstinline|USING (l.location_id)|.
+
+\subsection{Tipos de combinación}
+
+\begin{longtable}{>{\ttfamily}p{3.5cm} p{11.2cm}}
+\toprule
+\rowcolor{azulsql}
+\normalfont\textcolor{white}{\textbf{Combinación}} &
+\textcolor{white}{\textbf{Comportamiento}} \\
+\midrule
+\endhead
+INNER JOIN / JOIN & Devuelve solo filas con coincidencia en ambas tablas. \\
+LEFT JOIN & Conserva todas las filas de la tabla izquierda; coloca
+\lstinline|NULL| cuando no hay coincidencia a la derecha. \\
+RIGHT JOIN & Conserva todas las filas de la tabla derecha. \\
+FULL OUTER JOIN & Conserva las filas de ambos lados, coincidan o no. \\
+CROSS JOIN & Genera todas las combinaciones posibles; es un producto
+cartesiano. \\
+NATURAL JOIN & Une automáticamente columnas del mismo nombre. Debe usarse con
+cuidado porque una nueva columna homónima puede cambiar el resultado. \\
+\bottomrule
+\end{longtable}
+
+Ejemplo para mostrar empleados aunque no tengan departamento:
+
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.last_name,
+       d.department_name
+FROM oehr_employees e
+LEFT JOIN oehr_departments d
+  ON e.department_id = d.department_id;
+\end{lstlisting}
+
+\subsection{Autocombinación y unión no igualitaria}
+
+Una autocombinación usa dos alias de la misma tabla. Aquí se relaciona cada
+empleado con su jefe:
+
+\begin{lstlisting}
+SELECT e.last_name AS empleado,
+       j.last_name AS jefe
+FROM oehr_employees e
+LEFT JOIN oehr_employees j
+  ON e.manager_id = j.employee_id;
+\end{lstlisting}
+
+Una unión no igualitaria usa una condición diferente de \lstinline|=|, por
+ejemplo para ubicar un salario dentro de un rango:
+
+\begin{lstlisting}
+SELECT e.last_name, e.salary, g.grade_level
+FROM oehr_employees e
+JOIN job_grades g
+  ON e.salary BETWEEN g.lowest_sal AND g.highest_sal;
+\end{lstlisting}
+
+La tabla \lstinline|JOB_GRADES| es ilustrativa y debe existir para ejecutar el
+ejemplo.
+
+\important{Si se enumeran tablas sin una condición correcta, se genera un
+producto cartesiano: cada fila de una tabla se combina con cada fila de la otra.
+La consulta puede ejecutarse, pero sus datos no representan la relación real.}
+
+\section{DDL y DML observados brevemente}
+
+En la parte 2 de la lección 3 aparecen dos instrucciones fuera de la consulta de
+datos. Se registran aquí porque fueron observadas, aunque su estudio detallado
+corresponde a otros bloques de la unidad.
+
+\begin{objetivoleccion}
+\textbf{Alcance.} En esta unidad se observaron \texttt{CREATE TABLE} e
+\texttt{INSERT INTO}. Se incluyen para reconocer su propósito y su forma
+básica; el estudio completo de DDL y DML se realiza en unidades posteriores.
+\end{objetivoleccion}
+
+\subsection{CREATE TABLE}
+
+Crea una tabla y define sus columnas y tipos.
+
+\syntax{CREATE TABLE nombre (columna tipo_de_dato);}
+
+\begin{lstlisting}
+CREATE TABLE ejemplo (
+  rut VARCHAR2(12)
+);
+\end{lstlisting}
+
+\subsection{INSERT INTO}
+
+Agrega una fila. Los valores de texto deben ir entre comillas simples.
+
+\syntax{INSERT INTO tabla (columnas) VALUES (valores);}
+
+\begin{lstlisting}
+INSERT INTO ejemplo (rut)
+VALUES ('13.572.343-2');
+\end{lstlisting}
+
+\section{Errores frecuentes y cómo leerlos}
+
+Un mensaje de error no es solo un obstáculo: indica en qué parte de la consulta
+debe revisarse la sintaxis o la lógica. La siguiente tabla traduce los casos más
+habituales a una acción concreta.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{5cm}
+                  >{\raggedright\arraybackslash}p{5cm}
+                  >{\raggedright\arraybackslash}p{5cm}}
+\toprule
+\rowcolor{azulsql}
+\textcolor{white}{\textbf{Situación}} &
+\textcolor{white}{\textbf{Causa común}} &
+\textcolor{white}{\textbf{Corrección}} \\
+\midrule
+\endhead
+No aparecen filas con \lstinline|LIKE 'E%'| & No hay valores relacionados que
+comiencen con E. & Quitar temporalmente el filtro y consultar
+\lstinline|DISTINCT|. \\
+\lstinline|invalid identifier| & Nombre de columna incorrecto, por ejemplo
+\lstinline|DEPARTMENTS_ID|. & Revisar con \lstinline|DESCRIBE|; la columna es
+\lstinline|DEPARTMENT_ID|. \\
+\lstinline|column ambiguously defined| & Dos tablas poseen una columna con el
+mismo nombre. & Anteponer el alias: \lstinline|e.department_id|. \\
+Demasiadas filas o datos incoherentes & Falta una condición de unión o se unieron
+columnas equivocadas. & Revisar cada \lstinline|JOIN ... ON| siguiendo claves
+primarias y foráneas. \\
+Una comparación con \lstinline|NULL| no funciona & Se escribió
+\lstinline|= NULL|. & Usar \lstinline|IS NULL| o \lstinline|IS NOT NULL|. \\
+Una fecha fija cambia de interpretación & Se confió en el formato regional. &
+Usar \lstinline|DATE 'YYYY-MM-DD'| o \lstinline|TO_DATE| con formato explícito. \\
+Error de agrupación & Una columna del \lstinline|SELECT| no está agrupada ni
+dentro de una función de grupo. & Agregarla a \lstinline|GROUP BY| o aplicar una
+función de grupo. \\
+\bottomrule
+\end{longtable}
+
+\section{Método recomendado para construir una consulta}
+
+Construir la consulta por capas permite localizar errores rápidamente y evita
+escribir una sentencia extensa antes de comprobar sus relaciones básicas.
+
+\begin{enumerate}
+  \item Escribir con palabras qué datos debe mostrar el reporte.
+  \item Identificar en qué tabla se encuentra cada columna.
+  \item Elegir la tabla principal y escribir \lstinline|FROM|.
+  \item Trazar el camino entre tablas y agregar cada \lstinline|JOIN ... ON|.
+  \item Ejecutar sin filtros y revisar una muestra del resultado.
+  \item Agregar \lstinline|WHERE| y comprobar los valores existentes con
+        \lstinline|DISTINCT| cuando sea necesario.
+  \item Agregar agrupaciones si el reporte usa totales o promedios.
+  \item Ordenar al final con \lstinline|ORDER BY|.
+  \item Reemplazar \lstinline|SELECT *| por las columnas exactas del reporte.
+\end{enumerate}
+
+\EndTheory
+\begin{multicols}{3}[\section{Glosario alfabético de consulta rápida}]
+\small
+\raggedright
+Esta sección concentra los comandos y conceptos de la unidad. Para aprender un
+tema por primera vez, consulte la explicación y el ejemplo de su lección; use
+este glosario para recordar su propósito durante la práctica.
+
+\begin{glossarylist}
+\item[ADD\_MONTHS] Suma meses a una fecha.
+\item[AND] Exige que dos condiciones sean verdaderas.
+\item[AS] Introduce un alias de columna; suele ser opcional.
+\item[ASC / DESC] Define orden ascendente o descendente.
+\item[AVG] Calcula un promedio.
+\item[BETWEEN] Comprueba un rango inclusivo.
+\item[CASE] Devuelve resultados diferentes según condiciones.
+\item[COALESCE] Devuelve el primer valor no nulo.
+\item[CONCAT] Une dos cadenas.
+\item[COUNT] Cuenta filas o valores no nulos.
+\item[CREATE TABLE] Crea una tabla.
+\item[CROSS JOIN] Genera todas las combinaciones posibles entre dos tablas.
+\item[DATE (literal ANSI)] Representa una fecha fija como
+\lstinline|DATE 'YYYY-MM-DD'|, sin depender del formato de sesión.
+\item[DECODE] Realiza comparaciones condicionales por igualdad en Oracle.
+\item[DESCRIBE / DESC] Muestra la estructura de una tabla en el cliente Oracle.
+\item[DISTINCT] Elimina duplicados del resultado.
+\item[DUAL] Tabla especial de Oracle para evaluar expresiones.
+\item[ESCAPE] Define el carácter que permite buscar \texttt{\%} o
+\texttt{\_} literalmente en un patrón de \lstinline|LIKE|.
+\item[FULL OUTER JOIN] Conserva filas coincidentes y no coincidentes de ambas tablas.
+\item[FROM] Define el origen de datos.
+\item[GROUP BY] Forma grupos para cálculos agregados.
+\item[HAVING] Filtra grupos.
+\item[IN] Compara con una lista de valores.
+\item[INITCAP] Convierte la inicial de cada palabra a mayúscula.
+\item[INNER JOIN] Devuelve únicamente las filas que coinciden en ambas tablas.
+\item[INSERT INTO] Agrega una fila a una tabla.
+\item[INSTR] Busca la posición de un texto dentro de otro.
+\item[IS NULL] Comprueba si un valor es nulo.
+\item[JOIN] Combina filas relacionadas de dos tablas.
+\item[LAST\_DAY] Devuelve el último día del mes.
+\item[LEFT JOIN] Conserva todas las filas de la tabla izquierda.
+\item[LENGTH] Cuenta caracteres.
+\item[LIKE] Compara un texto con un patrón.
+\item[LPAD / RPAD] Completa un valor por la izquierda o la derecha.
+\item[LOWER / UPPER] Convierte texto a minúsculas o mayúsculas.
+\item[MAX / MIN] Obtiene el valor máximo o mínimo.
+\item[MOD] Devuelve el resto de una división.
+\item[MONTHS\_BETWEEN] Calcula meses entre dos fechas.
+\item[NATURAL JOIN] Une columnas homónimas automáticamente; requiere especial cuidado.
+\item[NEXT\_DAY] Devuelve el próximo día de semana indicado.
+\item[NOT] Niega una condición.
+\item[NOT BETWEEN / IN / LIKE] Niega el rango, la lista o el patrón correspondiente.
+\item[NULL] Representa ausencia o desconocimiento de un valor.
+\item[NULLIF] Devuelve nulo cuando dos expresiones son iguales.
+\item[NVL / NVL2] Sustituye o clasifica valores nulos.
+\item[ON] Declara la condición de un \lstinline|JOIN|.
+\item[OR] Exige que al menos una condición sea verdadera.
+\item[ORDER BY] Ordena el resultado final.
+\item[REPLACE] Sustituye apariciones de un texto dentro de otro.
+\item[RIGHT JOIN] Conserva todas las filas de la tabla derecha.
+\item[ROUND / TRUNC] Redondea o trunca números y fechas.
+\item[SELECT] Elige columnas y expresiones que se mostrarán.
+\item[SUBSTR] Extrae una parte de una cadena.
+\item[SUM] Suma los valores de un grupo.
+\item[SYSDATE] Fecha y hora actuales del servidor Oracle.
+\item[TO\_CHAR] Convierte números o fechas a texto con formato.
+\item[TO\_DATE] Convierte texto a fecha con formato.
+\item[TO\_NUMBER] Convierte texto a número.
+\item[TRIM] Elimina espacios u otros caracteres en los extremos de un texto.
+\item[USING] Abrevia una unión cuando la columna se llama igual en ambas tablas.
+\item[WHERE] Filtra filas antes de agrupar.
+\end{glossarylist}
+\end{multicols}
+
+\section*{Fuentes internas consultadas}
+\addcontentsline{toc}{section}{Fuentes internas consultadas}
+
+{\small
+\textbf{Archivos SQL:}
+\nolinkurl{U1/codigos/leccion-01.sql},
+\nolinkurl{leccion-02.sql},
+\nolinkurl{leccion-03.sql},
+\nolinkurl{leccion-03-parte-02.sql},
+\nolinkurl{leccion-04.sql},
+\nolinkurl{leccion-04-parte-02.sql},
+\nolinkurl{leccion-05.sql} y
+\nolinkurl{leccion-06.sql}.
+\textbf{Presentaciones:} lecciones 1 a 6 disponibles en
+\nolinkurl{U1/presentaciones/}.\par}
+
+\begin{ideaclave}[Antes de entregar una consulta]
+Compruebe que las tablas y columnas existen, que cada \texttt{JOIN} sigue una
+relación válida, que los textos y fechas usan literales correctos, que toda
+columna no agregada figura en \texttt{GROUP BY} y que los alias describen con
+claridad el resultado.
+\end{ideaclave}
+
+\end{document}

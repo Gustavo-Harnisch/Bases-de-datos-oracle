@@ -5,7 +5,10 @@
 - `presentaciones/`: fuentes PowerPoint de las lecciones 1 a 6.
 - `codigos/`: ejemplos SQL comentados asociados a cada presentación.
 - `evaluaciones/`: ES1, ES2, recuperativas y pautas preliminares.
-- `guias/`: documentos de apoyo para preparar el entorno.
+- `guias/`: documentos de apoyo para preparar el entorno y el compendio de las
+  lecciones 1 a 6, disponible como fuente
+  `glosario-sql-unidad-1.tex` y como PDF compilado
+  `glosario-sql-unidad-1.pdf`.
 
 Cada página MkDocs debe usar la presentación como fuente teórica y el SQL asociado como secuencia de ejemplos. El código completo debe mostrarse y ofrecerse para descarga al final de la clase.
 
