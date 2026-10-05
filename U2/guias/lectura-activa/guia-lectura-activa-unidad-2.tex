@@ -1,0 +1,336 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage[strings]{underscore}
+\usepackage{textcomp}
+
+\newcommand{\NombreEstudiante}{Nombre: \rule{6cm}{0.4pt}}
+\newcommand{\FechaPrueba}{Por confirmar}
+\newcommand{\MinutosSesion}{40}
+\newif\ifmostrarSoluciones
+\mostrarSolucionestrue
+
+\definecolor{azulUCM}{HTML}{17365D}
+\definecolor{azulClaro}{HTML}{EAF2F8}
+\definecolor{verdeClaro}{HTML}{E9F7EF}
+\definecolor{amarilloClaro}{HTML}{FFF8DC}
+\definecolor{rojoClaro}{HTML}{FDEDEC}
+\definecolor{grisCodigo}{HTML}{F4F6F7}
+\definecolor{sqlKeyword}{HTML}{005CC5}
+\definecolor{sqlString}{HTML}{A31515}
+\definecolor{sqlComment}{HTML}{22863A}
+
+\hypersetup{colorlinks=true,linkcolor=azulUCM,urlcolor=blue,
+  pdftitle={Guía de lectura activa -- Unidad 2 de Bases de Datos},
+  pdfauthor={Material de estudio INF-324}}
+\pagestyle{fancy}\fancyhf{}\lhead{INF-324 -- Unidad 2}\rhead{Administración y PL/SQL}\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+
+\lstdefinelanguage{OracleSQL}{
+  morekeywords={CREATE,OR,REPLACE,PROCEDURE,FUNCTION,TRIGGER,SEQUENCE,RETURN,IS,AS,
+  DECLARE,BEGIN,END,EXCEPTION,WHEN,THEN,ELSE,ELSIF,IF,FOR,IN,LOOP,WHILE,EXIT,
+  LOCK,TABLE,ROW,SHARE,EXCLUSIVE,MODE,INSERT,INTO,VALUES,UPDATE,SET,DELETE,FROM,
+  WHERE,SELECT,COMMIT,ROLLBACK,SAVEPOINT,RAISE,RAISE_APPLICATION_ERROR,DROP,
+  BEFORE,AFTER,ON,EACH,NEW,OLD,START,WITH,INCREMENT,BY,MINVALUE,MAXVALUE,CYCLE,
+  NOCYCLE,CACHE,NEXTVAL,CURRVAL,OPEN,FETCH,CLOSE,NO_DATA_FOUND,OTHERS},
+  sensitive=false,morecomment=[l]{--},morestring=[b]'}
+\lstset{language=OracleSQL,backgroundcolor=\color{grisCodigo},basicstyle=\ttfamily\small,
+  keywordstyle=\color{sqlKeyword}\bfseries,stringstyle=\color{sqlString},
+  commentstyle=\color{sqlComment}\itshape,numbers=left,numberstyle=\tiny\color{gray},
+  numbersep=8pt,frame=single,rulecolor=\color{gray!35},breaklines=true,
+  showstringspaces=false,upquote=true,tabsize=2,columns=fullflexible}
+
+\newtcolorbox{objetivo}{colback=azulClaro,colframe=azulUCM,title=Objetivo de lectura,fonttitle=\bfseries}
+\newtcolorbox{pausa}{colback=amarilloClaro,colframe=orange!70!black,title=Pausa activa,fonttitle=\bfseries}
+\newtcolorbox{clave}{colback=verdeClaro,colframe=green!45!black,title=Idea clave,fonttitle=\bfseries}
+\newtcolorbox{errorbox}{colback=rojoClaro,colframe=red!60!black,title=Error frecuente,fonttitle=\bfseries}
+\newtcolorbox{rutina}{colback=blue!3,colframe=azulUCM,title=Rutina diaria de estudio,fonttitle=\bfseries}
+\newcommand{\campo}[1]{\texttt{#1}}
+
+\title{\textbf{Guía de lectura activa de la Unidad 2}\\[0.3em]
+\large Administración de bases de datos y programación PL/SQL\\[0.5em]
+\normalsize Preparación progresiva para INF-324}
+\author{Construida a partir de las seis presentaciones y cinco guiones SQL de U2}
+\date{Octubre de 2026}
+
+\begin{document}
+\maketitle\thispagestyle{empty}
+\begin{center}\NombreEstudiante \hfill \textbf{Fecha de prueba:} \FechaPrueba\end{center}
+
+\begin{objetivo}
+Al terminar esta guía deberías poder explicar cómo se protege una base de datos, escribir bloques
+PL/SQL reutilizables, controlar transacciones y concurrencia, y elegir entre una función, una
+secuencia, un cursor o un trigger según el problema. La meta es comprender cada decisión antes de
+copiar una solución.
+\end{objetivo}
+
+\vfill
+\begin{center}\fbox{\parbox{0.9\textwidth}{
+\textbf{Cómo usarla.} Lee una sección breve, tapa el código, reconstruye la idea con tus palabras y
+responde las preguntas antes de mirar la pauta. En cada módulo marca los errores de concepto,
+sintaxis y transacción por separado.\
+}}
+\end{center}
+\vfill
+\begin{flushleft}
+\textbf{Fuentes locales revisadas:}
+\begin{itemize}
+\item Presentaciones en \campo{U2/presentaciones}: \campo{Clase 1}, \campo{Clase 1-2}, \campo{Clase 2}, \campo{Clase 2-2}, \campo{Clase 3} y \campo{Clase 4}.
+\item Guiones en \campo{U2/codigos}: \campo{U2\_C1.SQL}, \campo{U2\_C1-2.SQL}, \campo{U2\_C2.SQL}, \campo{U2\_C2-2.SQL} y \campo{U2\_C4.SQL}.
+\end{itemize}
+\end{flushleft}
+\newpage\tableofcontents\newpage
+
+\section{Mapa de la unidad}
+La Unidad 2 desarrolla el resultado de aprendizaje de administración de bases de datos mediante
+una secuencia práctica. Las parejas de presentación y código se leen como una sola lección: primero
+identifica el concepto, luego sigue el orden del script y finalmente modifica el ejemplo.
+
+\begin{longtable}{p{0.13\textwidth} p{0.28\textwidth} p{0.45\textwidth}}
+\toprule\textbf{Bloque} & \textbf{Fuentes} & \textbf{Pregunta guía}\\\midrule\endhead
+1 & Clase 1 + \campo{U2\_C1.SQL} & ¿Cómo se construye y ejecuta un procedimiento almacenado?\\
+2 & Clase 1-2 + \campo{U2\_C1-2.SQL} & ¿Cómo se coordinan usuarios, bloqueos, COMMIT, ROLLBACK y excepciones?\\
+3 & Clase 2-2 + \campo{U2\_C2-2.SQL} & ¿Cuándo conviene una función y qué restricciones tiene?\\
+4 & Clase 2 + \campo{U2\_C2.SQL} & ¿Cómo una secuencia genera claves sin depender de una tabla?\\
+5 & Clase 3 & ¿Cómo se recorre el resultado de un SELECT con cursores?\\
+6 & Clase 4 + \campo{U2\_C4.SQL} & ¿Qué evento debe activar un trigger y qué dato debe completar?\\
+\bottomrule
+\end{longtable}
+
+\begin{rutina}
+Cada sesión dura aproximadamente \MinutosSesion{} minutos: 5 para recordar sin mirar, 10 para leer,
+20 para escribir o modificar SQL y 5 para corregir. Repite al día siguiente la pregunta en la que
+obtuviste una respuesta roja. Una semana de práctica puede seguir el orden de los seis bloques y
+cerrar con una simulación integral.
+\end{rutina}
+
+\section{Bloque 1: seguridad, PL/SQL y procedimientos}
+\subsection{Lee y explica}
+La seguridad de la información se trabaja como confidencialidad, disponibilidad e integridad. En
+Oracle, PL/SQL agrega variables, estructuras de control y excepciones a SQL. Un bloque tiene las
+secciones DECLARE, BEGIN, EXCEPTION y END; un procedimiento es un subprograma nombrado, compilado y
+almacenado que puede recibir parámetros y ejecutar DML.
+
+\begin{lstlisting}
+CREATE OR REPLACE PROCEDURE CACB_CARGA_USUARIOS(
+  COD_USUARIO_P NUMBER, NOMBRE_USUARIO_P VARCHAR2)
+IS
+BEGIN
+  INSERT INTO CACB_USUARIO(COD_USUARIO, NOMBRE_USUARIO)
+  VALUES(COD_USUARIO_P, NOMBRE_USUARIO_P);
+END;
+\end{lstlisting}
+
+\begin{clave}Un procedimiento realiza una acción y puede recibir parámetros; una función debe
+devolver un valor. No confundas el bloque anónimo que lo invoca con el procedimiento almacenado.\end{clave}
+\begin{pausa}
+Sin mirar el ejemplo: explica qué parte declara parámetros, qué parte ejecuta el INSERT y cómo
+invocarías el procedimiento desde un bloque BEGIN...END.
+\end{pausa}
+
+\subsection{Preguntas}
+\begin{enumerate}[leftmargin=*]
+\item (Fácil) Nombra los tres objetivos de la seguridad de la información.
+\item (Fácil) ¿Qué diferencia hay entre DECLARE y BEGIN?
+\item (Fácil) ¿Qué tres operaciones DML se trabajan en los procedimientos de U2?
+\item (Intermedia) ¿Por qué CREATE OR REPLACE es útil al practicar?
+\item (Intermedia) Escribe un procedimiento que elimine un usuario por código.
+\item (Difícil) Diseña un procedimiento I/U/D que reciba una opción y justifica qué parámetros pueden tener valor NULL.
+\end{enumerate}
+\ifmostrarSoluciones\begin{clave}\textbf{Pauta breve:} confidencialidad, disponibilidad e integridad. DECLARE prepara variables y BEGIN ejecuta. DML: INSERT, UPDATE y DELETE. CREATE OR REPLACE recompila y reemplaza la versión anterior. El procedimiento I/U/D debe validar la opción antes de ejecutar la operación.\end{clave}\fi
+
+\section{Bloque 2: concurrencia, transacciones y excepciones}
+\subsection{Lee y explica}
+La concurrencia aparece cuando varios usuarios comparten recursos. \campo{LOCK TABLE} impone un
+modo de bloqueo; \campo{ROW EXCLUSIVE} permite trabajar por filas y evita ciertos bloqueos
+incompatibles. \campo{COMMIT} confirma, \campo{ROLLBACK} deshace y \campo{SAVEPOINT} ofrece un
+punto intermedio. Las excepciones se controlan después de BEGIN y pueden producirse con \campo{RAISE}
+o \campo{RAISE\_APPLICATION\_ERROR}.
+
+\begin{lstlisting}
+BEGIN
+  LOCK TABLE CACB_USUARIO IN ROW EXCLUSIVE MODE;
+  INSERT INTO CACB_USUARIO VALUES (1, 'CARLOS');
+  COMMIT;
+EXCEPTION
+  WHEN OTHERS THEN
+    RAISE_APPLICATION_ERROR(-20010, 'ERROR DE CARGA');
+    ROLLBACK;
+END;
+\end{lstlisting}
+
+\begin{errorbox}Un SELECT no bloquea una tabla. Además, un bloqueo permanece hasta COMMIT, ROLLBACK o un retroceso a un SAVEPOINT válido. Revisa el flujo de excepción y la posición de cada instrucción.\end{errorbox}
+\subsection{Preguntas}
+\begin{enumerate}[leftmargin=*]
+\item (Fácil) ¿Qué instrucción confirma una transacción?
+\item (Fácil) ¿Qué instrucción deshace el trabajo actual?
+\item (Fácil) ¿Qué propósito tiene LOCK TABLE?
+\item (Intermedia) Compara ROW SHARE, ROW EXCLUSIVE y EXCLUSIVE.
+\item (Intermedia) ¿Por qué una tabla bloqueada aún puede ser consultada?
+\item (Difícil) Ordena un procedimiento de carga que bloquee, inserte, confirme y revierta al fallar.
+\end{enumerate}
+\ifmostrarSoluciones\begin{clave}\textbf{Pauta breve:} COMMIT confirma y ROLLBACK deshace. El modo de bloqueo determina qué operaciones simultáneas se permiten. Las consultas no colocan bloqueo de tabla. Un flujo robusto pone LOCK antes del DML, COMMIT al terminar y ROLLBACK en el manejador de excepciones.\end{clave}\fi
+
+\section{Bloque 3: funciones PL/SQL}
+Una función es un bloque nombrado que devuelve un valor y puede usarse dentro de una expresión o
+consulta. El código de U2 usa \campo{SELECT INTO} para llevar una columna a una variable y captura
+\campo{NO\_DATA\_FOUND}. Las funciones llamadas desde SQL no deben ejecutar INSERT, UPDATE o DELETE.
+
+\begin{lstlisting}
+CREATE OR REPLACE FUNCTION CACB_OBTENER_SUELDO(EMPLOYEE_ID_F NUMBER)
+RETURN NUMBER IS
+  SUELDO_OBTENIDO NUMBER := 0;
+BEGIN
+  SELECT SALARY INTO SUELDO_OBTENIDO
+  FROM OEHR_EMPLOYEES WHERE EMPLOYEE_ID = EMPLOYEE_ID_F;
+  RETURN SUELDO_OBTENIDO;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN RETURN -1;
+END;
+\end{lstlisting}
+
+\begin{pausa}Tapa el código y explica qué ocurre si el sueldo es NULL y qué ocurre si no existe el empleado. Luego indica cómo llamarías la función desde DUAL.\end{pausa}
+\subsection{Preguntas}
+\begin{enumerate}[leftmargin=*]
+\item (Fácil) ¿Qué debe declarar RETURN?
+\item (Fácil) ¿Para qué sirve SELECT INTO?
+\item (Fácil) ¿Qué excepción indica que no se encontró una fila?
+\item (Intermedia) Diferencia una función SQL integrada de una función escrita en PL/SQL.
+\item (Intermedia) ¿Por qué una función de consulta no debe ejecutar DML?
+\item (Difícil) Diseña una función que devuelva 0 si un valor es NULL y -1 si no existe la fila.
+\end{enumerate}
+\ifmostrarSoluciones\begin{clave}\textbf{Pauta breve:} RETURN declara el tipo y devuelve el valor. SELECT INTO asigna el resultado a una variable. NO_DATA_FOUND indica ausencia de fila. La función de ejemplo usa IF para transformar NULL en 0 y un manejador para devolver -1.\end{clave}\fi
+
+\section{Bloque 4: secuencias}
+Una secuencia genera enteros únicos para uno o varios usuarios y puede alimentar una clave primaria.
+Sus números avanzan independientemente de COMMIT o ROLLBACK, por lo que pueden quedar saltos.
+\campo{NEXTVAL} incrementa y devuelve el siguiente valor; \campo{CURRVAL} devuelve el valor actual
+después de inicializar la secuencia.
+
+\begin{lstlisting}
+CREATE SEQUENCE CACB_PK_USUARIO
+  START WITH 1 INCREMENT BY 1 MINVALUE 1
+  MAXVALUE 2500 CACHE 200 NOCYCLE;
+
+INSERT INTO CACB_USUARIO(COD_USUARIO, NOMBRE_USUARIO)
+VALUES(CACB_PK_USUARIO.NEXTVAL, 'CARLOS');
+\end{lstlisting}
+
+\begin{clave}START WITH fija el inicio; INCREMENT BY fija el paso; MINVALUE y MAXVALUE limitan; CYCLE permite reiniciar y NOCYCLE evita reutilizar números.\end{clave}
+\subsection{Preguntas}
+\begin{enumerate}[leftmargin=*]
+\item (Fácil) ¿Qué pseudocolumna se usa primero?
+\item (Fácil) ¿Qué diferencia hay entre NEXTVAL y CURRVAL?
+\item (Fácil) ¿Por qué una secuencia puede presentar huecos?
+\item (Intermedia) Interpreta START WITH 1, INCREMENT BY 1 y MAXVALUE 2500.
+\item (Intermedia) ¿Qué efecto tiene NOCYCLE al alcanzar MAXVALUE?
+\item (Difícil) Explica por qué una secuencia es preferible a MAX(id)+1 en un procedimiento concurrente.
+\end{enumerate}
+\ifmostrarSoluciones\begin{clave}\textbf{Pauta breve:} NEXTVAL inicializa e incrementa; CURRVAL lee el actual. Los huecos aparecen por consumos concurrentes o transacciones revertidas. NOCYCLE detiene la generación al límite. La secuencia evita colisiones entre sesiones.\end{clave}\fi
+
+\section{Bloque 5: cursores PL/SQL}
+Los cursores permiten manejar el conjunto de filas devuelto por SELECT. Los implícitos los gestiona
+Oracle para resultados de una fila; los explícitos se declaran y recorren cuando se necesita procesar
+varias filas o reutilizar la consulta. La declaración del cursor no incluye INTO; el orden se indica
+con ORDER BY cuando es necesario.
+
+\begin{lstlisting}
+DECLARE
+  CURSOR c_usuarios IS
+    SELECT COD_USUARIO, NOMBRE_USUARIO
+    FROM CACB_USUARIO ORDER BY COD_USUARIO;
+BEGIN
+  FOR r IN c_usuarios LOOP
+    DBMS_OUTPUT.PUT_LINE(r.NOMBRE_USUARIO);
+  END LOOP;
+END;
+\end{lstlisting}
+
+\begin{pausa}Dibuja mentalmente el conjunto de filas, el registro r y el momento en que el FOR abre, obtiene y cierra el cursor.\end{pausa}
+\subsection{Preguntas}
+\begin{enumerate}[leftmargin=*]
+\item (Fácil) ¿Qué tipo de cursor se usa para varias filas?
+\item (Fácil) ¿Qué representa un cursor internamente?
+\item (Fácil) ¿Dónde debe ir ORDER BY si importa el orden?
+\item (Intermedia) ¿Por qué no se incluye INTO en la declaración?
+\item (Intermedia) Compara FOR r IN cursor con OPEN, FETCH y CLOSE manuales.
+\item (Difícil) Propón un cursor que recorra usuarios y actualice una tabla de auditoría, indicando dónde controlarías errores.
+\end{enumerate}
+\ifmostrarSoluciones\begin{clave}\textbf{Pauta breve:} el cursor explícito maneja varias filas. Es un segmento de memoria asociado al resultado. INTO pertenece a la obtención de una fila, no a la declaración. FOR gestiona automáticamente apertura, FETCH y cierre.\end{clave}\fi
+
+\section{Bloque 6: triggers e integridad}
+Un trigger es un bloque PL/SQL asociado a una tabla que se ejecuta por un evento DML. Sus componentes
+son nombre, evento, momento y cuerpo; \campo{FOR EACH ROW} lo hace ejecutar por fila. \campo{:NEW}
+y \campo{:OLD} permiten leer o modificar valores de la fila. Un trigger no puede ejecutar COMMIT,
+ROLLBACK ni SAVEPOINT.
+
+\begin{lstlisting}
+CREATE OR REPLACE TRIGGER CACB_PROMEDIO_AUTO
+BEFORE INSERT ON CACB_DETALLE_NOTAS
+FOR EACH ROW
+BEGIN
+  :NEW.PROMEDIO := ROUND((:NEW.NOTA1 + :NEW.NOTA2 + :NEW.NOTA3)/3, 1);
+END;
+\end{lstlisting}
+
+\begin{errorbox}No coloques COMMIT dentro del trigger. El ejemplo calcula un dato derivado antes del INSERT; la transacción la controla el bloque o procedimiento que ejecuta la operación.\end{errorbox}
+\subsection{Preguntas}
+\begin{enumerate}[leftmargin=*]
+\item (Fácil) ¿Qué operación activa el trigger del ejemplo?
+\item (Fácil) ¿Qué representa :NEW?
+\item (Fácil) ¿Qué cláusula hace que se ejecute por fila?
+\item (Intermedia) Diferencia BEFORE INSERT de AFTER INSERT.
+\item (Intermedia) Menciona dos usos de triggers además de calcular promedios.
+\item (Difícil) Diseña un trigger que normalice a mayúsculas un nombre antes de insertarlo y explica cómo tratarías NULL.
+\end{enumerate}
+\ifmostrarSoluciones\begin{clave}\textbf{Pauta breve:} el evento es INSERT, :NEW contiene los valores nuevos y FOR EACH ROW ejecuta una vez por fila. Los triggers también mantienen integridad y apoyan auditoría. La normalización puede asignar UPPER(:NEW.nombre) si el valor no es NULL.\end{clave}\fi
+
+\section{Simulación integradora}
+Resuelve sin mirar los módulos y luego revisa cada decisión.
+\begin{enumerate}[leftmargin=*]
+\item Crea una tabla de usuarios con clave primaria.
+\item Crea una secuencia para la clave y justifica MAXVALUE, CACHE y NOCYCLE.
+\item Escribe un procedimiento de carga que use NEXTVAL, LOCK TABLE, COMMIT y ROLLBACK.
+\item Agrega una función que devuelva un dato derivado y trate NO_DATA_FOUND.
+\item Declara un cursor explícito para recorrer los usuarios ordenados.
+\item Agrega un trigger que complete un campo antes de insertar, sin controlar la transacción.
+\end{enumerate}
+
+\begin{longtable}{p{0.36\textwidth} *{3}{>{\centering\arraybackslash}p{0.16\textwidth}}}
+\toprule\textbf{Habilidad} & \textbf{Intento 1} & \textbf{Intento 2} & \textbf{Intento 3}\\\midrule
+Procedimiento y bloque PL/SQL & & & \\
+Bloqueo y transacción & & & \\
+Excepciones & & & \\
+Funciones & & & \\
+Secuencias & & & \\
+Cursores & & & \\
+Triggers & & & \\
+\bottomrule
+\end{longtable}
+
+\section*{Checklist final}
+\begin{itemize}[leftmargin=*]
+\item Puedo explicar confidencialidad, disponibilidad e integridad.
+\item Puedo distinguir procedimiento, función, secuencia, cursor y trigger.
+\item Puedo ordenar LOCK, DML, COMMIT y ROLLBACK en una transacción.
+\item Puedo capturar NO_DATA_FOUND y generar un error propio.
+\item Puedo explicar NEXTVAL, CURRVAL y los límites de una secuencia.
+\item Puedo recorrer filas con un cursor y evitar INTO en su declaración.
+\item Puedo usar :NEW/:OLD y mantener el control de transacciones fuera del trigger.
+\end{itemize}
+
+\end{document}
