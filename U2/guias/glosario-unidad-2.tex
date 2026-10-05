@@ -1,0 +1,143 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{lmodern}
+\usepackage{geometry}
+\geometry{margin=2.2cm}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{listings}
+\definecolor{azul}{HTML}{164E63}
+\definecolor{azulclaro}{HTML}{E6F4F1}
+\definecolor{gris}{HTML}{374151}
+\hypersetup{colorlinks=true,linkcolor=azul,urlcolor=azul,pdftitle={Glosario de elementos de la Unidad 2}}
+\lstset{language=SQL,basicstyle=\ttfamily\small,keywordstyle=\color{azul}\bfseries,commentstyle=\color{gray},breaklines=true,frame=single,rulecolor=\color{gray!35},backgroundcolor=\color{gray!5},columns=fullflexible}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\newcommand{\term}[1]{\textbf{\color{azul}#1}}
+\newcommand{\fuente}[1]{\hfill\textit{Fuente: #1}}
+\begin{document}
+\begin{center}
+{\LARGE\bfseries\color{azul} Glosario de elementos de la Unidad 2}\par
+\vspace{0.3em}
+{\large Administración de bases de datos y programación PL/SQL}\par
+\vspace{0.7em}
+\fcolorbox{azul}{azulclaro}{\parbox{0.88\textwidth}{\small Este glosario se elaboró leyendo las seis presentaciones de \texttt{U2/presentaciones} y los cinco guiones SQL de \texttt{U2/codigos}. Las definiciones siguen el sentido y los ejemplos trabajados en esas clases.}}
+\end{center}
+\tableofcontents
+\newpage
+
+\section{Seguridad, administración y transacciones}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.23\textwidth} p{0.69\textwidth}}
+\toprule
+\textbf{Elemento} & \textbf{Definición y uso en la unidad}\\
+\midrule
+\endhead
+\term{Administración de bases de datos} & Conjunto de tareas para operar y proteger una base de datos: usuarios, control de acceso, transacciones, integridad, recuperación y disponibilidad. Es el foco del resultado de aprendizaje de la Unidad 2. \fuente{Clases 1, 1-2}\\
+\term{Seguridad de la información} & Medidas preventivas y reactivas destinadas a proteger la información en cualquiera de sus medios. En una base de datos se concreta mediante cuentas, controles de acceso, respaldo, recuperación y diseño adecuado. \fuente{Clase 1}\\
+\term{Confidencialidad} & La información solo queda disponible para usuarios autorizados. Se apoya en cuentas de usuario y controles de acceso. \fuente{Clase 1}\\
+\term{Disponibilidad} & La información y los servicios pueden utilizarse cuando se necesitan. El respaldo, la recuperación y la alta disponibilidad contribuyen a ella. \fuente{Clase 1}\\
+\term{Integridad} & Los datos se mantienen correctos, coherentes y completos. Se favorece mediante restricciones, respaldo, recuperación y diseño de la base de datos. \fuente{Clase 1}\\
+\term{Transacción} & Unidad lógica de trabajo que agrupa operaciones y puede confirmarse o deshacerse. En los ejemplos contiene inserciones, actualizaciones o eliminaciones ejecutadas desde PL/SQL. \fuente{Clases 1, 1-2}\\
+\term{COMMIT} & Confirma los cambios de la transacción y hace que los datos mantenidos en memoria se materialicen en los archivos de datos. \fuente{Clase 1-2; U2\_C1-2.SQL}\\
+\term{ROLLBACK} & Deshace el trabajo de la transacción actual; también puede utilizarse al capturar una excepción. \fuente{Clase 1-2; U2\_C1-2.SQL}\\
+\term{SAVEPOINT} & Punto intermedio al que puede retroceder una transacción. La clase lo menciona como alternativa para revertir antes de un bloqueo de tabla. \fuente{Clase 1-2}\\
+\term{Concurrencia} & Situación en que varias operaciones o usuarios trabajan sobre recursos compartidos en el mismo periodo. Sin control puede producir un cuello de botella o conflictos. \fuente{Clase 1-2}\\
+\term{LOCK TABLE} & Instrucción que bloquea una o más tablas en un modo especificado. El bloqueo permanece hasta COMMIT, ROLLBACK o un retroceso a un SAVEPOINT anterior al bloqueo. \fuente{Clase 1-2; U2\_C1-2.SQL}\\
+\term{ROW SHARE} & Modo que permite acceso simultáneo, pero impide que otro usuario bloquee toda la tabla en modo exclusivo. Es sinónimo de SHARE UPDATE. \fuente{Clase 1-2}\\
+\term{ROW EXCLUSIVE} & Modo que permite trabajar por filas y además impide el bloqueo SHARE. Se obtiene automáticamente al actualizar, insertar o eliminar. \fuente{Clase 1-2}\\
+\term{SHARE} & Modo que permite consultas simultáneas, pero prohíbe actualizaciones sobre la tabla bloqueada. \fuente{Clase 1-2}\\
+\term{SHARE ROW EXCLUSIVE} & Permite que otros consulten las filas, pero impide que bloqueen la tabla en SHARE o actualicen filas. \fuente{Clase 1-2}\\
+\term{EXCLUSIVE} & Permite consultas, pero prohíbe cualquier otra actividad sobre la tabla bloqueada. \fuente{Clase 1-2}\\
+\end{longtable}
+
+\section{PL/SQL y subprogramas almacenados}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.23\textwidth} p{0.69\textwidth}}
+\toprule\textbf{Elemento} & \textbf{Definición y uso en la unidad}\\\midrule\endhead
+\term{PL/SQL} & Lenguaje de programación procedural incrustado en Oracle que amplía SQL con variables, modularidad, control de flujo y manejo de excepciones. Puede ejecutarse en el servidor y en herramientas Oracle. \fuente{Clase 1}\\
+\term{Bloque PL/SQL} & Unidad estructurada con secciones DECLARE (opcional), BEGIN, EXCEPTION (opcional) y END. El cuerpo ejecutable se ubica entre BEGIN y END. \fuente{Clase 1}\\
+\term{Variable} & Identificador que almacena un valor durante la ejecución. Puede usar tipos predefinidos como DATE, NUMBER, CHAR y VARCHAR2, o tipos definidos por el usuario. \fuente{Clase 1}\\
+\term{\%TYPE} & Atributo que permite declarar una variable o parámetro con el mismo tipo de dato que una columna, por ejemplo \texttt{tabla.campo\%TYPE}. \fuente{U2\_C1-2.SQL}\\
+\term{Estructura de control} & Instrucción que decide o repite el flujo: IF/THEN/ELSE, LOOP/EXIT/WHEN y FOR. La clase también presenta WHILE. \fuente{Clase 1}\\
+\term{Procedimiento almacenado} & Subprograma compilado y guardado como objeto del esquema. Realiza acciones de mantenimiento, inserción, actualización o eliminación y puede recibir parámetros. \fuente{Clase 1; U2\_C1.SQL}\\
+\term{CREATE OR REPLACE} & Forma usada en los guiones para crear un procedimiento, función o trigger, sustituyendo la versión existente si ya está definida. \fuente{U2\_C1.SQL; U2\_C2-2.SQL; U2\_C4.SQL}\\
+\term{Parámetro} & Dato que recibe un procedimiento o una función para realizar su tarea. En los procedimientos de usuarios se reciben código, nombre y apellidos. \fuente{Clase 1; U2\_C1.SQL}\\
+\term{DML} & Lenguaje de manipulación de datos; en la unidad se trabaja con INSERT, UPDATE y DELETE dentro de procedimientos. \fuente{Clase 1; U2\_C1-2.SQL}\\
+\term{Excepción} & Error PL/SQL producido implícita o explícitamente durante la ejecución. Se captura en la sección EXCEPTION para controlar la respuesta del programa. \fuente{Clase 1-2}\\
+\term{RAISE} & Instrucción que detiene la ejecución normal y transfiere el control al manejador de excepciones. Puede generar excepciones predefinidas o definidas por el usuario. \fuente{Clase 1-2}\\
+\term{RAISE\_APPLICATION\_ERROR} & Procedimiento para generar un error definido por el usuario con un código entre $-20\,000$ y $-20\,999$ y un mensaje de hasta 2048 bytes. \fuente{Clase 1-2; U2\_C1-2.SQL}\\
+\term{WHEN OTHERS} & Manejador que permite capturar otras excepciones no tratadas por casos más específicos. En el guion se acompaña de RAISE\_APPLICATION\_ERROR y ROLLBACK. \fuente{U2\_C1-2.SQL}\\
+\end{longtable}
+
+\section{Funciones, secuencias y cursores}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.23\textwidth} p{0.69\textwidth}}
+\toprule\textbf{Elemento} & \textbf{Definición y uso en la unidad}\\\midrule\endhead
+\term{Función SQL} & Función integrada en Oracle disponible en instrucciones SQL. Puede convertir argumentos al tipo esperado y, por regla general, devolver NULL si recibe NULL. \fuente{Clase 2-2}\\
+\term{Función PL/SQL} & Bloque nombrado que devuelve un valor, puede almacenarse en la base de datos y llamarse dentro de una expresión. \fuente{Clase 2-2; U2\_C2-2.SQL}\\
+\term{RETURN} & Cláusula que declara el tipo de retorno de una función y sentencia que entrega el valor resultante. \fuente{Clase 2-2; U2\_C2-2.SQL}\\
+\term{SELECT INTO} & Forma de asignar el resultado de una consulta a una variable PL/SQL. Si no encuentra filas puede producir NO\_DATA\_FOUND. \fuente{U2\_C2-2.SQL}\\
+\term{Restricción de función} & En los ejemplos de la unidad una función llamada desde SQL no debe ejecutar INSERT, UPDATE ni DELETE, ni llamar a otro subprograma que los ejecute. \fuente{Clase 2-2}\\
+\term{DUAL} & Tabla de Oracle usada en los ejemplos para evaluar una función o una pseudocolumna sin consultar una tabla de negocio. \fuente{U2\_C2-2.SQL; Clase 2}\\
+\term{Secuencia} & Objeto de base de datos que genera enteros únicos para varios usuarios; puede alimentar automáticamente una clave primaria. Sus valores son independientes de las tablas y pueden presentar saltos. \fuente{Clase 2; U2\_C2.SQL}\\
+\term{NEXTVAL} & Pseudocolumna que incrementa una secuencia y devuelve el nuevo valor. Debe utilizarse primero para inicializar el acceso a la secuencia. \fuente{Clase 2}\\
+\term{CURRVAL} & Pseudocolumna que devuelve el valor actual de una secuencia para la sesión que ya utilizó NEXTVAL. \fuente{Clase 2}\\
+\term{START WITH / INCREMENT BY} & Cláusulas de CREATE SEQUENCE que fijan el valor inicial y la diferencia entre valores sucesivos. El incremento puede ser positivo o negativo, pero distinto de cero. \fuente{Clase 2}\\
+\term{MAXVALUE / MINVALUE} & Cláusulas que establecen los límites superior e inferior de una secuencia. \fuente{Clase 2}\\
+\term{CYCLE / NOCYCLE} & CYCLE reinicia la secuencia en MINVALUE al alcanzar MAXVALUE; NOCYCLE evita reutilizar los números. \fuente{Clase 2}\\
+\term{Cursor} & Segmento de memoria y mecanismo PL/SQL para manejar el conjunto de registros devuelto por un SELECT; se puede recorrer para operar sobre sus filas. \fuente{Clase 3}\\
+\term{Cursor implícito} & Cursor gestionado automáticamente para instrucciones que devuelven un solo registro. \fuente{Clase 3}\\
+\term{Cursor explícito} & Cursor declarado por el programador para consultas que pueden devolver varios registros; también puede elegirse por eficiencia al reutilizarlo. \fuente{Clase 3}\\
+\end{longtable}
+
+\section{Triggers e integridad}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.23\textwidth} p{0.69\textwidth}}
+\toprule\textbf{Elemento} & \textbf{Definición y uso en la unidad}\\\midrule\endhead
+\term{Trigger (disparador)} & Bloque PL/SQL asociado a una tabla que se ejecuta como consecuencia de una instrucción DML INSERT, UPDATE o DELETE. \fuente{Clase 4}\\
+\term{Evento de disparo} & Operación que activa el trigger y momento en que lo hace, por ejemplo BEFORE INSERT sobre una tabla. \fuente{Clase 4; U2\_C4.SQL}\\
+\term{FOR EACH ROW} & Indica que el trigger se ejecuta una vez por cada fila afectada. \fuente{Clase 4; U2\_C4.SQL}\\
+\term{WHEN} & Cláusula opcional de un trigger para restringir las filas o condiciones que activan su cuerpo. \fuente{Clase 4}\\
+\term{:NEW y :OLD} & Referencias seudoregistro usadas en triggers para acceder a los valores nuevos y anteriores de una fila. El ejemplo asigna un promedio a \texttt{:NEW.PROMEDIO}. \fuente{Clase 4; U2\_C4.SQL}\\
+\term{Trigger de integridad} & Trigger usado para mantener restricciones complejas o completar automáticamente datos derivados, como el promedio de tres notas. \fuente{Clase 4; U2\_C4.SQL}\\
+\term{Auditoría} & Registro o seguimiento de cambios realizados en una tabla. La clase identifica los triggers como mecanismo para auditar información. \fuente{Clase 4}\\
+\term{Control de transacciones en triggers} & Un trigger no puede emitir COMMIT, ROLLBACK ni SAVEPOINT. Estas operaciones deben controlarse fuera del disparador. \fuente{Clase 4}\\
+\end{longtable}
+
+\section{Sintaxis de referencia}
+Los siguientes patrones condensan la sintaxis trabajada en los archivos SQL de la unidad.
+\begin{lstlisting}
+LOCK TABLE nombre_tabla IN ROW EXCLUSIVE MODE;
+COMMIT;
+ROLLBACK;
+
+CREATE OR REPLACE PROCEDURE nombre (parametro tipo) IS
+BEGIN
+  -- acciones DML
+END;
+
+CREATE SEQUENCE nombre
+  START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2500 NOCYCLE;
+
+CREATE OR REPLACE FUNCTION nombre (parametro tipo)
+  RETURN tipo IS
+BEGIN
+  RETURN valor;
+END;
+
+CREATE OR REPLACE TRIGGER nombre
+BEFORE INSERT ON tabla FOR EACH ROW
+BEGIN
+  :NEW.campo := expresion;
+END;
+\end{lstlisting}
+
+\section*{Fuentes revisadas}
+\begin{itemize}[leftmargin=*]
+\item Presentaciones: \texttt{Clase 1.pptx}, \texttt{Clase 1-2.pptx}, \texttt{Clase 2.pptx}, \texttt{Clase 2-2.pptx}, \texttt{Clase 3.pptx} y \texttt{Clase 4.pptx}.
+\item Guiones SQL: \texttt{U2\_C1.SQL}, \texttt{U2\_C1-2.SQL}, \texttt{U2\_C2.SQL}, \texttt{U2\_C2-2.SQL} y \texttt{U2\_C4.SQL}.
+\end{itemize}
+\end{document}

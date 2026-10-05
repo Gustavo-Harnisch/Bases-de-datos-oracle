@@ -2,10 +2,12 @@
 -- Caso: Sistema de Recursos Humanos de Oracle
 
 -- Requerimiento 1:
--- Mostrar el nombre y el codigo del cargo concatenados, junto con su sueldo
--- minimo, para los cargos cuyo codigo o nombre comience con la letra S.
+-- Quiero que se muestren concatenados el nombre y código del cargo, de acuerdo al
+-- siguiente ejemplo: El código del cargo Sales Manager es: SA_MAN, como también su
+-- sueldo mínimo asociado, de todos aquellos cargos que su código o nombre comience
+-- con la letra S
 SELECT CONCAT(
-           'El código del cargo ',
+           'El codigo del cargo ',
            CONCAT(JOB_TITLE, CONCAT(' es: ', JOB_ID))
        ) AS "CARGO",
        MIN_SALARY AS "SUELDO MINIMO"
@@ -88,3 +90,24 @@ WHERE E.COMMISSION_PCT IS NOT NULL
       WHERE UPPER(FIRST_NAME) = 'NEENA'
         AND UPPER(LAST_NAME) = 'KOCHHAR'
   );
+
+
+-- Requerimiento 7:
+-- Mostrar el codigo y nombre de los empleados con al menos diez anos de
+-- antiguedad. Incluir la fecha actual del sistema con formato en espanol y el
+-- salario con separador de miles, decimales y simbolo de dolar.
+SELECT E.EMPLOYEE_ID AS "CODIGO EMPLEADO",
+       CONCAT(E.FIRST_NAME, CONCAT(' ', E.LAST_NAME)) AS "NOMBRE EMPLEADO",
+       TO_CHAR(
+           SYSDATE,
+           'FMDD "de" Month "de" YYYY, HH24:MI',
+           'NLS_DATE_LANGUAGE=SPANISH'
+       ) AS "FECHA ACTUAL",
+       TO_CHAR(
+           E.SALARY,
+           'FM$999G999G990D00',
+           'NLS_NUMERIC_CHARACTERS='',.'''
+       ) AS "SALARIO FORMATEADO"
+FROM OEHR_EMPLOYEES E
+WHERE E.HIRE_DATE <= ADD_MONTHS(SYSDATE, -120)
+ORDER BY E.SALARY DESC;

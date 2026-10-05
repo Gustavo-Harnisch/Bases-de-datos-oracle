@@ -1,0 +1,2247 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage[strings]{underscore}
+\usepackage{textcomp}
+
+% -----------------------------------------------------------------------------
+% PARÁMETROS EDITABLES
+% Cambia solamente estos valores para personalizar la guía.
+% -----------------------------------------------------------------------------
+\newcommand{\NombreEstudiante}{Nombre: \rule{6cm}{0.4pt}}
+\newcommand{\FechaPrueba}{Por confirmar}
+\newcommand{\MinutosSesion}{40}
+\newcommand{\MetaSemanal}{5}
+
+% true  = guía completa con pauta y solucionario.
+% false = versión de práctica sin respuestas (ideal para autoevaluarse).
+\newif\ifmostrarSoluciones
+\mostrarSolucionestrue
+
+\definecolor{azulUCM}{HTML}{17365D}
+\definecolor{azulClaro}{HTML}{EAF2F8}
+\definecolor{verdeClaro}{HTML}{E9F7EF}
+\definecolor{amarilloClaro}{HTML}{FFF8DC}
+\definecolor{rojoClaro}{HTML}{FDEDEC}
+\definecolor{grisCodigo}{HTML}{F4F6F7}
+\definecolor{sqlKeyword}{HTML}{005CC5}
+\definecolor{sqlString}{HTML}{A31515}
+\definecolor{sqlComment}{HTML}{22863A}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azulUCM,
+  urlcolor=blue,
+  pdftitle={Guía de lectura activa -- Unidad 1 de Bases de Datos},
+  pdfauthor={Material de estudio basado en INF-324 y documentación oficial de Oracle}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{INF-324 -- Unidad 1}
+\rhead{Oracle SQL}
+\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+
+\lstdefinelanguage{OracleSQL}{
+  morekeywords={SELECT,FROM,WHERE,DISTINCT,AS,AND,OR,NOT,BETWEEN,IN,LIKE,IS,NULL,
+    ORDER,BY,ASC,DESC,GROUP,HAVING,JOIN,INNER,LEFT,RIGHT,FULL,OUTER,CROSS,ON,USING,
+    CASE,WHEN,THEN,ELSE,END,COUNT,SUM,AVG,MIN,MAX,ROUND,TRUNC,MOD,UPPER,LOWER,
+    INITCAP,CONCAT,SUBSTR,LENGTH,INSTR,TO_CHAR,TO_NUMBER,TO_DATE,NVL,NVL2,
+    COALESCE,NULLIF,DECODE,SYSDATE,MONTHS_BETWEEN,ADD_MONTHS,NEXT_DAY,LAST_DAY},
+  sensitive=false,
+  morecomment=[l]{--},
+  morestring=[b]',
+}
+
+\lstset{
+  language=OracleSQL,
+  backgroundcolor=\color{grisCodigo},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{sqlKeyword}\bfseries,
+  stringstyle=\color{sqlString},
+  commentstyle=\color{sqlComment}\itshape,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=8pt,
+  frame=single,
+  rulecolor=\color{gray!35},
+  breaklines=true,
+  showstringspaces=false,
+  upquote=true,
+  tabsize=2,
+  columns=fullflexible
+}
+
+\newtcolorbox{objetivo}{
+  colback=azulClaro,
+  colframe=azulUCM,
+  title=Objetivo de lectura,
+  fonttitle=\bfseries
+}
+\newtcolorbox{pausa}{
+  colback=amarilloClaro,
+  colframe=orange!70!black,
+  title=Pausa activa,
+  fonttitle=\bfseries
+}
+\newtcolorbox{clave}{
+  colback=verdeClaro,
+  colframe=green!45!black,
+  title=Idea clave,
+  fonttitle=\bfseries
+}
+\newtcolorbox{errorbox}{
+  colback=rojoClaro,
+  colframe=red!60!black,
+  title=Error frecuente,
+  fonttitle=\bfseries
+}
+\newtcolorbox{prueba}{
+  colback=violet!5,
+  colframe=violet!70!black,
+  title=Conexión con la primera prueba,
+  fonttitle=\bfseries
+}
+\newtcolorbox{rutina}{
+  colback=blue!3,
+  colframe=azulUCM,
+  title=Rutina diaria de estudio,
+  fonttitle=\bfseries
+}
+\newtcolorbox{plantilla}[1]{
+  enhanced,
+  breakable,
+  colback=gray!3,
+  colframe=azulUCM!80,
+  title={Plantilla textual: #1},
+  fonttitle=\bfseries
+}
+
+\newcommand{\campo}[1]{\texttt{#1}}
+\newcommand{\tabla}[1]{\texttt{#1}}
+\newcommand{\nivel}[1]{\textbf{#1}}
+\newcommand{\casilla}{\(\square\)}
+
+\title{\textbf{Guía de lectura activa de la Unidad 1}\\[0.3em]
+\large Consultas Oracle SQL sobre el esquema OEHR\\[0.5em]
+\normalsize Preparación progresiva para la primera prueba de INF-324}
+\author{Guía construida desde las clases U1 L1--L6, la pauta de prueba y Oracle Database 21c}
+\date{Septiembre de 2026}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{center}
+\NombreEstudiante \hfill \textbf{Fecha de prueba:} \FechaPrueba
+\end{center}
+
+\begin{objetivo}
+Al terminar esta guía deberías poder traducir un requerimiento escrito en español a una consulta
+Oracle SQL correcta, justificar cada cláusula y detectar errores frecuentes antes de comparar tu
+respuesta con la pauta. El foco es comprender, no memorizar consultas completas.
+\end{objetivo}
+
+\vfill
+
+\begin{center}
+\fbox{\parbox{0.9\textwidth}{
+\textbf{Cómo usar esta guía.} Lee una sección corta, tapa el ejemplo, intenta reconstruirlo y recién
+después compáralo. Al llegar a las preguntas, escribe tus respuestas antes de mirar el solucionario.
+Cada módulo contiene \textbf{3 preguntas muy fáciles, 2 intermedias y 1 difícil}. Si fallas una
+pregunta, vuelve al párrafo que explica esa decisión, no solamente a la solución.
+}}
+\end{center}
+
+\begin{prueba}
+La evaluación histórica usada como referencia pondera un \textbf{30\%}, dispone de
+\textbf{90 minutos}, contiene \textbf{6 requerimientos} y usa una pauta total de
+\textbf{35 puntos}: 5 por formalidad y 5 por cada requerimiento. Estos datos sirven para practicar;
+confirma con el docente la fecha, duración y ponderación de la evaluación vigente.
+\end{prueba}
+
+\vfill
+
+\begin{flushleft}
+\textbf{Base principal del contenido local:}
+\begin{itemize}
+  \item scripts \campo{leccion-01.sql} a \campo{leccion-06.sql};
+  \item presentaciones \campo{leccion-01.ppt} a \campo{leccion-06.ppt};
+  \item evaluación \campo{es1-consultas-sql.docx};
+  \item pauta revisada \campo{pauta-es1-consultas-sql.sql}.
+\end{itemize}
+\end{flushleft}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Mapa de la unidad y estrategia de resolución}
+
+La Unidad 1 avanza desde una consulta de una sola tabla hasta consultas que combinan tablas,
+agrupan filas y emplean subconsultas. La evaluación de referencia contiene seis requerimientos y la
+pauta SQL revisada propone una solución para cada uno. Por eso esta guía distingue entre:
+
+\begin{itemize}
+  \item \textbf{contenido confirmado por la pauta}: concatenación, filtros con patrones, funciones
+  de grupo, \campo{GROUP BY}, \campo{HAVING}, uniones, auto-unión y subconsultas;
+  \item \textbf{herramientas necesarias enseñadas en clases}: consulta básica, operadores,
+  funciones de texto, número y fecha, conversiones, nulos y ordenamiento;
+  \item \textbf{ampliaciones presentes en las diapositivas}: \campo{CASE}, \campo{DECODE},
+  \campo{COALESCE}, distintos tipos de \campo{JOIN} y funciones adicionales de fecha.
+\end{itemize}
+
+\subsection{Ciclo semanal para leer y practicar todos los días}
+
+Repite este ciclo hasta la fecha de la prueba. Cada sesión dura aproximadamente
+\MinutosSesion{} minutos; la meta es completar al menos \MetaSemanal{} sesiones por semana. Si un
+día tienes menos tiempo, haz sólo la recuperación de memoria y una consulta corta.
+
+\begin{longtable}{p{0.10\textwidth} p{0.25\textwidth} p{0.55\textwidth}}
+\toprule
+\textbf{Día} & \textbf{Foco} & \textbf{Producto comprobable} \\
+\midrule
+\endhead
+1 & Método y esquema & Dibuja las relaciones entre empleados, cargos, departamentos y jefes sin
+mirar la guía. \\
+2 & Módulos 1--2 & Resuelve una consulta con concatenación y otra con filtros, nulos y orden. \\
+3 & Módulos 3--4 & Resuelve una consulta con funciones de texto y otra con conversiones o nulos. \\
+4 & Módulo 5 & Resuelve un resumen con \campo{GROUP BY} y justifica por qué el filtro usa
+\campo{HAVING}. \\
+5 & Módulo 6 & Construye un \campo{JOIN} y una auto-unión siguiendo las claves del esquema. \\
+6 & Módulo 7 & Resuelve una subconsulta de una fila y otra de varias filas. \\
+7 & Pauta completa & Simula los seis requerimientos con un límite de 90 minutos y corrige con la
+rúbrica. \\
+\bottomrule
+\end{longtable}
+
+\begin{rutina}
+En cada sesión usa cuatro bloques: \textbf{5 minutos} para recordar sintaxis sin mirar,
+\textbf{10 minutos} de lectura, \textbf{20 minutos} escribiendo SQL y \textbf{5 minutos} para
+corregir. Marca cada error como conceptual, de sintaxis o de lectura del enunciado. Al día siguiente
+comienza rehaciendo la consulta que fallaste.
+\end{rutina}
+
+\subsection{Registro de avance}
+
+Marca una casilla sólo si puedes resolver el tema sin copiar el ejemplo. Usa V (verde) si lo haces
+solo, A (amarillo) si necesitas una pista y R (rojo) si necesitas mirar la respuesta.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{0.33\textwidth} *{3}{>{\centering\arraybackslash}X}}
+\toprule
+\textbf{Habilidad} & \textbf{Intento 1} & \textbf{Intento 2} & \textbf{Intento 3} \\
+\midrule
+SELECT, alias y concatenación & & & \\
+WHERE, LIKE, rangos y nulos & & & \\
+Funciones de texto, número y fecha & & & \\
+GROUP BY y HAVING & & & \\
+JOIN y auto-unión & & & \\
+Subconsultas & & & \\
+Pauta completa en 90 minutos & & & \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{El método de seis decisiones}
+
+Antes de escribir SQL, contesta en papel:
+
+\begin{enumerate}[label=\arabic*.]
+  \item \textbf{¿Qué columnas debe mostrar el resultado?} Eso construye el \campo{SELECT}.
+  \item \textbf{¿De qué tablas salen?} Eso construye el \campo{FROM}.
+  \item \textbf{¿Cómo se relacionan las tablas?} Eso construye cada \campo{JOIN ... ON}.
+  \item \textbf{¿Qué filas individuales se aceptan?} Eso construye el \campo{WHERE}.
+  \item \textbf{¿Hay que resumir filas?} Si hay conteos, promedios, mínimos, máximos o sumas,
+  piensa en funciones de grupo y \campo{GROUP BY}.
+  \item \textbf{¿Se filtran grupos o se ordena el resultado?} Usa \campo{HAVING} para grupos y
+  \campo{ORDER BY} para presentación.
+\end{enumerate}
+
+El orden de escritura que usaremos durante toda la guía es:
+
+\begin{lstlisting}
+SELECT   expresiones
+FROM     tablas_y_joins
+WHERE    condiciones_de_fila
+GROUP BY columnas_de_agrupacion
+HAVING   condiciones_de_grupo
+ORDER BY criterio_de_orden;
+\end{lstlisting}
+
+No todas las consultas necesitan todas las cláusulas, pero las que aparezcan deben conservar ese
+orden.
+
+\section{Plantillas textuales para construir consultas}
+
+Esta sección no entrega consultas para copiar. Cada plantilla indica, en palabras, qué debes colocar
+después de un comando. Los textos en cursiva representan decisiones que cambian según el enunciado;
+no se escriben literalmente. Lee primero el requerimiento, reemplaza mentalmente cada decisión y
+recién entonces redacta la consulta.
+
+\begin{clave}
+\campo{GROUP BY} no sirve para enlazar tablas. Su función es reunir filas que comparten el mismo
+valor. Para enlazar una tabla con otra se utiliza \campo{JOIN} y la relación se explica con
+\campo{ON} o, cuando corresponde, con \campo{USING}.
+\end{clave}
+
+\subsection{Consulta básica y construcción de la salida}
+
+\begin{plantilla}{SELECT y FROM}
+\textbf{Qué debes colocar.} Después de \campo{SELECT}, escribe los elementos que deben aparecer como
+columnas del resultado. Cada elemento puede ser un atributo, un cálculo, una función o un texto fijo;
+separa varios elementos con comas. Después de \campo{FROM}, escribe la tabla que contiene las filas
+de partida y, si será útil, asígnale un alias corto.
+
+\textbf{Frase para completar.} ``Mostrar \emph{los datos solicitados} desde
+\emph{la tabla que contiene las filas principales}.''
+
+\textbf{Paso a paso.}
+\begin{enumerate}[label=\arabic*.]
+  \item Subraya en el enunciado todo lo que se debe mostrar.
+  \item Convierte cada dato solicitado en un elemento del \campo{SELECT}.
+  \item Comprueba que cada elemento esté separado por una coma.
+  \item Identifica la tabla que contiene las filas principales y colócala en \campo{FROM}.
+  \item Si existen varias tablas, deja aquí la principal y añade las demás mediante \campo{JOIN}.
+\end{enumerate}
+\end{plantilla}
+
+\begin{plantilla}{alias con AS}
+Un alias cambia únicamente el encabezado mostrado o el nombre corto utilizado dentro de la consulta.
+Después de una columna o expresión, coloca \campo{AS} y luego un nombre descriptivo. Si el alias
+contiene espacios, tildes o debe conservar exactamente mayúsculas y minúsculas, escríbelo entre
+comillas dobles. Para un alias de tabla se coloca el nombre corto inmediatamente después del nombre
+de la tabla; en Oracle no es necesario escribir \campo{AS} para ese alias.
+\end{plantilla}
+
+\begin{plantilla}{DISTINCT}
+Coloca \campo{DISTINCT} inmediatamente después de \campo{SELECT} cuando el resultado deba eliminar
+filas repetidas. La comparación considera en conjunto todos los elementos mostrados. Antes de usarlo,
+comprueba que la repetición no provenga de un \campo{JOIN} incorrecto: \campo{DISTINCT} limpia la
+salida, pero no repara una relación mal construida.
+\end{plantilla}
+
+\begin{plantilla}{expresiones y concatenación}
+Para un cálculo, coloca en el \campo{SELECT} el atributo numérico, el operador aritmético y el valor u
+otro atributo con el que se operará. Usa paréntesis cuando el orden matemático deba quedar explícito.
+Para formar una frase o un dato compuesto, intercala los atributos con los textos fijos y únelos con
+el operador de concatenación. Los textos fijos llevan comillas simples; los nombres de columnas no.
+Si utilizas la función \campo{CONCAT}, recuerda que recibe dos elementos por vez, por lo que más de
+dos elementos requieren anidación.
+\end{plantilla}
+
+\subsection{Filtros de filas y condiciones}
+
+\begin{plantilla}{WHERE y operadores de comparación}
+Después de \campo{WHERE}, coloca primero el atributo que se evaluará, luego el operador de
+comparación y finalmente el valor, atributo o resultado con el que se compara. Usa igualdad para una
+coincidencia exacta; los operadores de diferencia, mayor, menor, mayor o igual y menor o igual se
+eligen de acuerdo con las palabras del enunciado. Los textos y fechas convertidas explícitamente
+requieren el tratamiento de su tipo; los números no llevan comillas.
+
+\textbf{Frase para completar.} ``Conservar las filas donde \emph{el atributo evaluado} cumpla
+\emph{la condición indicada}.''
+
+\textbf{Paso a paso.}
+\begin{enumerate}[label=\arabic*.]
+  \item Identifica qué filas deben quedar dentro del resultado.
+  \item Busca el atributo que permite decidir si cada fila se acepta.
+  \item Traduce expresiones como ``igual'', ``distinto'', ``superior'' o ``hasta'' al operador
+  correspondiente.
+  \item Escribe el valor de comparación con el tipo correcto.
+  \item Si hay más condiciones, conéctalas con \campo{AND} u \campo{OR} y usa paréntesis cuando pueda
+  existir ambigüedad.
+\end{enumerate}
+\end{plantilla}
+
+\begin{plantilla}{AND, OR y NOT}
+Usa \campo{AND} cuando todas las condiciones conectadas deban cumplirse. Usa \campo{OR} cuando sea
+suficiente cumplir al menos una. Coloca \campo{NOT} delante de la condición que se desea negar.
+Como \campo{AND} se evalúa antes que \campo{OR}, agrupa con paréntesis las condiciones que expresan
+una misma idea. Después de escribirlas, lee la condición completa en voz alta y verifica que diga lo
+mismo que el requerimiento.
+\end{plantilla}
+
+\begin{plantilla}{BETWEEN y NOT BETWEEN}
+Después de \campo{BETWEEN}, coloca el límite inferior, luego \campo{AND} y finalmente el límite
+superior. Ambos extremos están incluidos. Usa \campo{NOT BETWEEN} cuando se pidan filas fuera del
+rango; en ese caso tampoco se incluyen los dos extremos. Verifica que ambos límites tengan un tipo
+compatible con el atributo evaluado.
+\end{plantilla}
+
+\begin{plantilla}{IN y NOT IN}
+Después de \campo{IN}, coloca entre paréntesis el conjunto de valores aceptados o una subconsulta que
+produzca esos valores. Es la opción natural cuando un atributo puede coincidir con cualquiera de
+varias alternativas. \campo{NOT IN} expresa que no debe coincidir con ninguna, pero requiere cuidado
+si el conjunto puede contener nulos; en ese caso conviene excluirlos dentro de la subconsulta o
+evaluar otra estrategia.
+\end{plantilla}
+
+\begin{plantilla}{LIKE}
+Después de \campo{LIKE}, coloca entre comillas simples el patrón de búsqueda. El símbolo de porcentaje
+representa cero o más caracteres y el guion bajo representa exactamente un carácter. Coloca el
+porcentaje al final para ``comienza con'', al inicio para ``termina con'' y a ambos lados para
+``contiene''. Si la comparación no debe depender de mayúsculas, transforma tanto el atributo como el
+patrón siguiendo el mismo criterio.
+\end{plantilla}
+
+\begin{plantilla}{IS NULL e IS NOT NULL}
+Después del atributo coloca \campo{IS NULL} para conservar filas donde falta el dato, o
+\campo{IS NOT NULL} para conservar aquellas donde sí existe. Un nulo no es cero, una cadena vacía ni
+un valor que pueda compararse mediante igualdad. Primero interpreta si el enunciado pide ausencia o
+presencia y luego elige una de estas dos condiciones.
+\end{plantilla}
+
+\subsection{Orden, funciones y transformación de valores}
+
+\begin{plantilla}{ORDER BY}
+Después de \campo{ORDER BY}, coloca el atributo, expresión o alias que determina el orden. Añade
+\campo{ASC} para orden ascendente o \campo{DESC} para descendente; si no indicas nada, se usa el orden
+ascendente. Para resolver empates, agrega más criterios separados por comas, desde el criterio más
+importante hasta el último desempate. Esta cláusula organiza la presentación y se escribe al final.
+
+\textbf{Frase para completar.} ``Ordenar primero por \emph{el criterio principal} en sentido
+\emph{ascendente o descendente}, y luego por \emph{el criterio de desempate}.''
+\end{plantilla}
+
+\begin{plantilla}{funciones de una sola fila}
+Coloca el nombre de la función y, entre paréntesis, el atributo o valor que debe transformar. Una
+función de texto recibe texto y puede cambiar mayúsculas, extraer caracteres, medir longitud o buscar
+una posición. Una función numérica recibe números y puede redondear, truncar u obtener un resto. Una
+función de fecha recibe una fecha y permite desplazarla, encontrar límites del calendario o calcular
+una diferencia. Estas funciones producen un resultado por cada fila y pueden anidarse: se resuelve
+primero la función más interna. Cuando sólo necesites evaluar una expresión y no leer datos del
+modelo, utiliza en \campo{FROM} la tabla auxiliar de una fila destinada a ese propósito.
+\end{plantilla}
+
+\begin{plantilla}{conversiones y formatos}
+Para convertir explícitamente, elige la función según el tipo de destino: texto, número o fecha.
+Dentro de sus paréntesis coloca primero el valor que se convertirá y después, cuando corresponda, el
+modelo de formato. Calcula y compara usando los tipos originales; aplica el formato sólo cuando el
+resultado esté listo para mostrarse. Esto evita ordenar números como palabras o interpretar fechas
+según una configuración diferente.
+\end{plantilla}
+
+\begin{plantilla}{tratamiento de nulos}
+Usa \campo{NVL} cuando necesites sustituir un posible nulo por un único valor alternativo. Usa
+\campo{NVL2} cuando quieras un resultado si el dato existe y otro si falta. Usa \campo{COALESCE}
+cuando debas elegir el primer valor no nulo de una lista. Usa \campo{NULLIF} cuando dos expresiones
+iguales deban producir un nulo. Antes de aplicar cualquiera, decide qué significa la ausencia en el
+problema y comprueba que los resultados sean de tipos compatibles.
+\end{plantilla}
+
+\begin{plantilla}{CASE y DECODE}
+Para una decisión general, comienza una expresión \campo{CASE}, añade una condición con
+\campo{WHEN}, coloca el resultado correspondiente después de \campo{THEN}, repite las ramas
+necesarias, agrega un resultado alternativo con \campo{ELSE} y cierra con \campo{END}. Para
+comparaciones simples de igualdad, \campo{DECODE} recibe una expresión y pares formados por valor de
+búsqueda y resultado, más un resultado predeterminado opcional. Prefiere \campo{CASE} cuando existan
+rangos, desigualdades o varias condiciones lógicas.
+\end{plantilla}
+
+\subsection{Resúmenes, GROUP BY y HAVING}
+
+\begin{plantilla}{funciones de grupo}
+Coloca una función de grupo alrededor del atributo que deseas resumir. Usa \campo{COUNT} para contar,
+\campo{SUM} para sumar, \campo{AVG} para promediar, \campo{MIN} para obtener el menor valor y
+\campo{MAX} para obtener el mayor. \campo{COUNT(*)} cuenta filas; una función aplicada a un atributo
+normalmente ignora sus valores nulos. Si no existe \campo{GROUP BY}, la función resume todo el
+conjunto filtrado en un único grupo.
+\end{plantilla}
+
+\begin{plantilla}{GROUP BY}
+Después de \campo{GROUP BY}, coloca el atributo o los atributos cuyos valores iguales definen cada
+grupo. Es decir, escribe aquello que responde ``por cada qué'' se desea calcular el resumen. Si el
+resultado muestra varios atributos normales además de funciones de grupo, todos esos atributos
+normales deben aparecer también en \campo{GROUP BY}. No coloques allí las funciones de grupo.
+
+\textbf{Frase para completar.} ``Agrupar las filas por \emph{el atributo que identifica cada grupo}
+para calcular \emph{el conteo, suma, promedio, mínimo o máximo solicitado}.''
+
+\textbf{Paso a paso.}
+\begin{enumerate}[label=\arabic*.]
+  \item Encuentra en el enunciado expresiones como ``por cada'', ``por categoría'' o ``por tipo''.
+  \item Coloca ese atributo de agrupación como dato visible si el resultado debe identificar cada
+  grupo.
+  \item Añade al resultado las funciones de resumen solicitadas.
+  \item Aplica en \campo{WHERE} los filtros que eliminan filas antes de agrupar.
+  \item Después de \campo{GROUP BY}, repite todos los atributos visibles que no estén dentro de una
+  función de grupo.
+  \item Comprueba que la salida produzca una fila por cada combinación distinta de esos atributos.
+\end{enumerate}
+\end{plantilla}
+
+\begin{plantilla}{HAVING}
+Después de \campo{HAVING}, coloca una condición que evalúe el resultado de una función de grupo o una
+característica del grupo ya formado. Esta cláusula decide qué grupos permanecen. La secuencia mental
+es: primero filtrar filas con \campo{WHERE}, después formar grupos con \campo{GROUP BY}, luego
+calcular los resúmenes y finalmente filtrar esos grupos con \campo{HAVING}. Si la condición puede
+evaluarse fila por fila antes de agrupar, normalmente corresponde a \campo{WHERE}.
+
+\textbf{Frase para completar.} ``Conservar solamente los grupos cuyo
+\emph{resultado agregado} cumpla \emph{la condición solicitada}.''
+\end{plantilla}
+
+\subsection{Uniones entre tablas}
+
+\begin{plantilla}{JOIN con ON}
+Después de la tabla principal, coloca el tipo de \campo{JOIN}, el nombre de la tabla secundaria y su
+alias. A continuación escribe \campo{ON}; a su izquierda coloca el alias y la clave de una tabla, y a
+su derecha el alias y la clave relacionada de la otra. Ambas columnas deben representar la misma
+relación del modelo, no solamente compartir un nombre parecido.
+
+\textbf{Frase para completar.} ``Unir \emph{la tabla auxiliar} con \emph{la tabla principal} cuando
+\emph{la clave de la primera} sea igual a \emph{la clave relacionada de la segunda}.''
+
+\textbf{Paso a paso.}
+\begin{enumerate}[label=\arabic*.]
+  \item Decide cuál es la entidad principal que determina las filas que quieres listar.
+  \item Identifica qué dato falta y en qué tabla auxiliar se encuentra.
+  \item Busca en el modelo la clave que sale de la tabla principal y la clave a la que apunta.
+  \item Asigna un alias diferente a cada tabla.
+  \item Escribe en \campo{ON} la igualdad entre ambas claves, calificadas con sus alias.
+  \item Repite el proceso por cada tabla adicional y revisa si alguna unión multiplica filas de forma
+  inesperada.
+\end{enumerate}
+\end{plantilla}
+
+\begin{plantilla}{INNER, LEFT, RIGHT y FULL JOIN}
+Usa \campo{INNER JOIN}, o simplemente \campo{JOIN}, cuando sólo deban permanecer filas con
+coincidencia en ambas tablas. Usa \campo{LEFT JOIN} cuando deban conservarse todas las filas de la
+tabla escrita a la izquierda, aunque no tengan coincidencia. \campo{RIGHT JOIN} conserva todas las
+filas de la tabla derecha. \campo{FULL JOIN} conserva las filas de ambos lados. Primero identifica
+qué conjunto debe preservarse y luego ubícalo en el lado coherente con el tipo de unión elegido.
+\end{plantilla}
+
+\begin{plantilla}{USING, NATURAL JOIN, auto-unión y cadena de uniones}
+Usa \campo{USING} únicamente cuando las dos tablas comparten una columna de enlace con exactamente el
+mismo nombre; dentro de sus paréntesis coloca ese nombre una sola vez. Para una auto-unión, escribe la
+misma tabla dos veces con alias distintos, asignando a cada copia un rol diferente, y relaciona esos
+roles mediante \campo{ON}. Para una cadena, añade una tabla a la vez siguiendo el camino real de
+claves y verifica cada enlace antes de continuar con el siguiente. \campo{NATURAL JOIN} busca de
+forma automática todas las columnas con nombres coincidentes; úsalo sólo si el modelo confirma que
+todas esas coincidencias representan las relaciones deseadas, porque puede enlazar columnas
+adicionales sin que resulte evidente.
+\end{plantilla}
+
+\begin{plantilla}{unión no equitativa y CROSS JOIN}
+Una unión no equitativa utiliza en \campo{ON} una condición de rango o desigualdad en lugar de una
+igualdad, cuando el modelo define la coincidencia de esa forma. \campo{CROSS JOIN} combina cada fila
+de una tabla con todas las filas de la otra y no utiliza condición de enlace. Debe aparecer sólo
+cuando el producto cartesiano sea solicitado expresamente; si surge por accidente, revisa las claves
+de unión.
+\end{plantilla}
+
+\subsection{Subconsultas}
+
+\begin{plantilla}{subconsulta de una fila}
+Dentro de paréntesis, coloca una consulta interna que responda primero la pregunta auxiliar y devuelva
+un único valor. En la consulta externa, compara un atributo con ese resultado mediante el operador
+simple apropiado. Antes de usar igualdad, mayor o menor, asegúrate de que la consulta interna no pueda
+devolver más de una fila; de lo contrario se producirá un error.
+
+\textbf{Frase para completar.} ``Conservar las filas cuyo \emph{atributo externo} se compare con
+\emph{el único valor calculado por la pregunta interna}.''
+\end{plantilla}
+
+\begin{plantilla}{subconsulta de varias filas}
+Dentro de paréntesis, coloca una consulta interna que produzca una columna con cero, uno o varios
+valores. En la consulta externa, utiliza un operador preparado para conjuntos, como \campo{IN}, para
+comparar el atributo con cualquiera de esos resultados. La consulta interna debe mostrar sólo la
+columna necesaria para la comparación y sus valores deben ser compatibles con el atributo externo.
+
+\textbf{Frase para completar.} ``Conservar las filas cuyo \emph{atributo externo} pertenezca al
+\emph{conjunto de valores obtenido por la pregunta interna}.''
+\end{plantilla}
+
+\begin{plantilla}{método para construir una subconsulta}
+\begin{enumerate}[label=\arabic*.]
+  \item Separa el requerimiento en una pregunta principal y una pregunta auxiliar.
+  \item Resuelve primero la pregunta auxiliar y determina cuántas filas podría devolver.
+  \item Coloca esa consulta entre paréntesis en la condición de la pregunta principal.
+  \item Usa un operador simple para un solo valor o un operador de conjunto para varios valores.
+  \item Controla los nulos cuando puedan alterar una comparación negativa.
+  \item Ejecuta mentalmente primero la parte interna y después la externa para justificar el
+  resultado.
+\end{enumerate}
+\end{plantilla}
+
+\subsection{Plantilla maestra de lectura}
+
+Para cualquier requerimiento, completa en una hoja las siguientes frases antes de escribir SQL:
+
+\begin{enumerate}[label=\textbf{\arabic*.}]
+  \item Mostraré \emph{los atributos, cálculos o textos pedidos}.
+  \item La fila principal proviene de \emph{la tabla que representa lo que se desea listar}.
+  \item Añadiré \emph{cada tabla auxiliar} mediante \emph{su clave de enlace real}.
+  \item Conservaré únicamente las filas que cumplan \emph{las condiciones individuales}.
+  \item Resumiré con \emph{la función solicitada} por cada \emph{atributo de agrupación}, si
+  corresponde.
+  \item Conservaré los grupos que cumplan \emph{la condición agregada}.
+  \item Presentaré el resultado según \emph{el criterio y sentido de orden solicitado}.
+\end{enumerate}
+
+Cuando una frase no aplica, omite su cláusula. Las frases que sí aplican deben transformarse
+respetando el orden de escritura de la sentencia.
+
+\section{El esquema OEHR: aprender a seguir las claves}
+
+Una consulta de varias tablas sólo es correcta si sus relaciones representan el modelo. Las tablas
+más importantes para la prueba son las siguientes.
+
+\subsection*{Cómo leer un esquema antes de consultar}
+
+Una base de datos relacional separa la información en tablas para no repetir innecesariamente los
+mismos datos. En OEHR, por ejemplo, la fila de un empleado no guarda el texto completo del
+departamento ni el nombre de su cargo: guarda \campo{DEPARTMENT_ID} y \campo{JOB_ID}. Esos valores
+funcionan como referencias hacia las filas correspondientes de \tabla{OEHR_DEPARTMENTS} y
+\tabla{OEHR_JOBS}. Para resolver un requerimiento debes distinguir la \emph{tabla principal}, que
+representa aquello que el enunciado quiere listar, de las tablas auxiliares que aportan atributos. Si
+el enunciado dice ``muestre todos los trabajadores con su departamento'', la tabla principal es
+\tabla{OEHR_EMPLOYEES}: quieres obtener una fila de salida por trabajador. Como el nombre del
+departamento no está allí, sigues la referencia \campo{EMPLOYEES.DEPARTMENT_ID} hasta la clave
+\campo{DEPARTMENTS.DEPARTMENT_ID}. La igualdad no se inventa por semejanza semántica, sino que se
+deduce de la clave foránea declarada en el esquema. En esta relación, muchos empleados pueden
+pertenecer a un mismo departamento, pero cada empleado apunta como máximo a un departamento. Por
+eso, al unir correctamente ambas tablas, un empleado no debería multiplicarse por todos los
+departamentos. Este razonamiento también permite anticipar nulos: \campo{DEPARTMENT_ID} admite nulo,
+por lo que podría existir un empleado sin departamento asignado. Si el requerimiento exige conservarlo,
+la unión tendrá que preservar la tabla principal mediante \campo{LEFT JOIN}; si sólo interesan las
+coincidencias, bastará un \campo{JOIN} interno. Cuando la información solicitada está más lejos, no se
+salta directamente entre tablas: se recorre el camino completo de claves. Para llegar desde empleado a
+región se pasa por departamento, ubicación y país. Pensar el esquema como un mapa de nodos y enlaces
+evita dos fallos comunes: unir columnas que no representan la misma entidad y ocultar un error con
+\campo{DISTINCT}. \campo{DISTINCT} puede quitar duplicados visibles, pero jamás corrige una relación
+mal construida.
+
+\begin{longtable}{p{0.26\textwidth} p{0.65\textwidth}}
+\toprule
+\textbf{Tabla} & \textbf{Columnas relevantes} \\
+\midrule
+\endhead
+\tabla{OEHR\_EMPLOYEES} &
+\campo{EMPLOYEE\_ID}, \campo{FIRST\_NAME}, \campo{LAST\_NAME}, \campo{EMAIL},
+\campo{HIRE\_DATE}, \campo{JOB\_ID}, \campo{SALARY}, \campo{COMMISSION\_PCT},
+\campo{MANAGER\_ID}, \campo{DEPARTMENT\_ID}. \\
+\tabla{OEHR\_JOBS} &
+\campo{JOB\_ID}, \campo{JOB\_TITLE}, \campo{MIN\_SALARY}, \campo{MAX\_SALARY}. \\
+\tabla{OEHR\_DEPARTMENTS} &
+\campo{DEPARTMENT\_ID}, \campo{DEPARTMENT\_NAME}, \campo{MANAGER\_ID},
+\campo{LOCATION\_ID}. \\
+\tabla{OEHR\_LOCATIONS} &
+\campo{LOCATION\_ID}, \campo{STREET\_ADDRESS}, \campo{POSTAL\_CODE}, \campo{CITY},
+\campo{STATE\_PROVINCE}, \campo{COUNTRY\_ID}. \\
+\tabla{OEHR\_COUNTRIES} &
+\campo{COUNTRY\_ID}, \campo{COUNTRY\_NAME}, \campo{REGION\_ID}. \\
+\tabla{OEHR\_REGIONS} &
+\campo{REGION\_ID}, \campo{REGION\_NAME}. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Relaciones que debes reconocer}
+
+\begin{align*}
+\text{EMPLOYEES.JOB\_ID} &= \text{JOBS.JOB\_ID} \\
+\text{EMPLOYEES.DEPARTMENT\_ID} &= \text{DEPARTMENTS.DEPARTMENT\_ID} \\
+\text{EMPLOYEES.MANAGER\_ID} &= \text{EMPLOYEES.EMPLOYEE\_ID} \\
+\text{DEPARTMENTS.LOCATION\_ID} &= \text{LOCATIONS.LOCATION\_ID} \\
+\text{LOCATIONS.COUNTRY\_ID} &= \text{COUNTRIES.COUNTRY\_ID} \\
+\text{COUNTRIES.REGION\_ID} &= \text{REGIONS.REGION\_ID}
+\end{align*}
+
+La tercera relación es especial: una fila de empleados apunta a otra fila de la misma tabla. Eso
+permite encontrar al jefe mediante una \emph{auto-unión} o \emph{self join}.
+
+\begin{pausa}
+Sin escribir SQL, traza el camino necesario para mostrar el apellido de un empleado y el continente
+donde trabaja. La ruta es: empleado $\rightarrow$ departamento $\rightarrow$ ubicación
+$\rightarrow$ país $\rightarrow$ región.
+\end{pausa}
+
+\section{Módulo 1: SELECT, expresiones, alias y concatenación}
+
+\begin{objetivo}
+Construir la salida de una consulta de una tabla, calcular columnas y producir textos legibles.
+\end{objetivo}
+
+El primer paso de toda consulta consiste en definir con exactitud la forma del resultado. Una
+sentencia \campo{SELECT} no modifica los datos: construye una tabla temporal de salida a partir de las
+filas disponibles en \campo{FROM}. Cada elemento separado por coma dentro de \campo{SELECT} se
+convierte en una columna del resultado y puede ser una columna almacenada, un texto fijo, una
+operación aritmética o una función. Esta idea ayuda a traducir enunciados: si se solicita ``código,
+nombre completo y sueldo anual'', aparecen tres expresiones, aunque el nombre completo use dos
+columnas y el sueldo anual se calcule multiplicando por doce. El resultado no necesita copiar la
+estructura física de la tabla. Puede presentar datos derivados y encabezados claros mediante alias.
+Sin embargo, la consulta se evalúa para cada fila producida por \campo{FROM}; por eso una expresión
+como \campo{salary*12} genera un valor anual para cada empleado, no un total de la empresa. Para
+obtener totales se requieren funciones de grupo, estudiadas más adelante. También debes diferenciar
+una constante de una columna: \campo{'Empleado: '} es texto literal porque está entre comillas
+simples, mientras que \campo{last_name} es una referencia al dato de la fila actual. La concatenación
+combina esas piezas para construir reportes humanos sin alterar los valores originales. Los
+paréntesis son decisivos en cálculos: \campo{(salary+100)*12} aplica un bono mensual antes de
+anualizar, mientras que \campo{salary+100*12} sólo suma 1200 al sueldo mensual por la precedencia de
+la multiplicación. Finalmente, \campo{DISTINCT} debe entenderse sobre la fila de salida completa. Si
+seleccionas únicamente \campo{job_id}, obtienes cargos distintos; si seleccionas además
+\campo{employee_id}, cada empleado vuelve a diferenciar la fila. Antes de ejecutar, cuenta las
+expresiones solicitadas, verifica las comas y pregúntate qué valor produciría cada una para un solo
+empleado concreto. Esa simulación mental detecta muchos errores tempranos.
+
+\subsection{SELECT y FROM}
+
+\campo{SELECT} indica qué se mostrará y \campo{FROM} de dónde se obtendrán las filas.
+
+\begin{lstlisting}
+SELECT employee_id, first_name, salary
+FROM oehr_employees;
+\end{lstlisting}
+
+El asterisco devuelve todas las columnas. Es útil para explorar, pero en una respuesta de prueba es
+mejor nombrar únicamente las columnas solicitadas.
+
+\begin{lstlisting}
+SELECT *
+FROM oehr_departments;
+\end{lstlisting}
+
+\subsection{Expresiones aritméticas y precedencia}
+
+Las columnas numéricas pueden participar en expresiones con \campo{+}, \campo{-}, \campo{*} y
+\campo{/}. Multiplicación y división se evalúan antes que suma y resta; usa paréntesis para expresar
+la intención.
+
+\begin{lstlisting}
+SELECT employee_id,
+       salary,
+       salary * 12 AS sueldo_anual,
+       (salary + 57) * 12 AS anual_con_bono_mensual
+FROM oehr_employees;
+\end{lstlisting}
+
+Un nulo propagará normalmente el nulo en una expresión. Por ejemplo,
+\campo{salary * commission\_pct} será nulo cuando la comisión sea nula. Más adelante se resolverá
+con \campo{NVL}.
+
+\subsection{Alias de columna}
+
+Un alias cambia el encabezado del resultado, no el nombre almacenado de la columna. Puede escribirse
+con \campo{AS}. Las comillas dobles conservan espacios, tildes o mayúsculas exactas.
+
+\begin{lstlisting}
+SELECT employee_id AS "COD_EMPLEADO",
+       salary * 12 AS "SUELDO_ANUAL"
+FROM oehr_employees;
+\end{lstlisting}
+
+No uses comillas simples para un alias: en Oracle las comillas simples representan texto literal.
+
+\subsection{DISTINCT}
+
+\campo{DISTINCT} elimina filas duplicadas de la combinación completa de expresiones seleccionadas.
+
+\begin{lstlisting}
+SELECT DISTINCT job_id
+FROM oehr_employees;
+\end{lstlisting}
+
+\subsection{Concatenación}
+
+Oracle permite concatenar con \campo{||}. También ofrece \campo{CONCAT}, pero ésta recibe dos
+argumentos; para unir tres piezas debe anidarse.
+
+\begin{lstlisting}
+SELECT employee_id,
+       first_name || ' ' || last_name AS nombre_completo
+FROM oehr_employees;
+
+SELECT employee_id,
+       CONCAT(first_name, CONCAT(' ', last_name)) AS nombre_completo
+FROM oehr_employees;
+\end{lstlisting}
+
+\begin{prueba}
+La primera consulta de la pauta pide formar una frase con \campo{JOB\_TITLE} y \campo{JOB\_ID}.
+La construcción más clara es:
+\begin{lstlisting}
+SELECT 'El codigo del cargo ' || job_title ||
+       ' es ' || job_id AS reporte
+FROM oehr_jobs;
+\end{lstlisting}
+Después se añadirá el filtro que exige que el título o el código comience con S.
+\end{prueba}
+
+\subsection{Lectura activa del módulo 1}
+
+\begin{enumerate}[label=\textbf{M1.\arabic*}]
+  \item \nivel{Muy fácil.} ¿Qué cláusula indica las columnas que se mostrarán?
+  \item \nivel{Muy fácil.} ¿Qué símbolo permite pedir todas las columnas?
+  \item \nivel{Muy fácil.} ¿Qué palabra elimina resultados duplicados?
+  \item \nivel{Intermedia.} Escribe una consulta que muestre código, apellido y sueldo anual de cada
+  empleado, con los alias \campo{CODIGO}, \campo{APELLIDO} y \campo{ANUAL}.
+  \item \nivel{Intermedia.} Explica la diferencia entre \campo{salary + 100 * 12} y
+  \campo{(salary + 100) * 12}.
+  \item \nivel{Difícil.} Genera una sola columna con el texto
+  ``KING gana 24000 al año'', usando el apellido real, el sueldo real y una expresión anual. No
+  escribas valores fijos salvo los textos de unión.
+\end{enumerate}
+
+\section{Módulo 2: WHERE, operadores, patrones, nulos y orden}
+
+\begin{objetivo}
+Seleccionar filas individuales con precisión y presentar el resultado en el orden solicitado.
+\end{objetivo}
+
+Una consulta suele comenzar con muchas filas posibles y luego descartar las que no cumplen el
+requerimiento. \campo{WHERE} expresa precisamente esa decisión fila por fila: para cada empleado,
+Oracle evalúa una condición cuyo resultado lógico puede ser verdadero, falso o desconocido. Sólo las
+filas verdaderas continúan. La tercera posibilidad aparece principalmente con nulos y explica por qué
+\campo{commission_pct = NULL} no funciona: un valor desconocido no puede afirmarse igual a otro
+valor desconocido; debe preguntarse \campo{IS NULL}. Al combinar condiciones conviene traducir el
+español de manera literal. ``Empleados del departamento 50 u 80, y con sueldo mayor a 5000'' se
+convierte en \campo{department_id IN (50,80) AND salary>5000}. Los paréntesis protegen la intención
+cuando existe una mezcla de \campo{AND} y \campo{OR}; sin ellos, la precedencia puede aceptar filas
+que el enunciado no quería. Los operadores abreviados también tienen significado exacto:
+\campo{BETWEEN} incluye los dos límites e \campo{IN} representa una lista de alternativas. En texto,
+\campo{LIKE} compara un patrón, no una frase aproximada. El porcentaje acepta cualquier cantidad de
+caracteres y el guion bajo exactamente uno, de modo que \campo{'\_a\%s'} exige una \campo{a} en la
+segunda posición y una \campo{s} al final. Para no depender de cómo estén escritas las mayúsculas,
+transforma tanto el razonamiento como el patrón a un mismo caso, por ejemplo
+\campo{UPPER(last_name) LIKE 'S\%'}. Una vez elegidas las filas, \campo{ORDER BY} modifica solamente
+su presentación: no cambia qué filas existen ni arregla un filtro equivocado. Cuando se ordena por
+varias columnas, la primera define los grupos principales de orden y las siguientes resuelven los
+empates. Leer una consulta correctamente significa imaginar esta secuencia: obtener filas, evaluar
+cada condición, conservar las verdaderas y recién entonces ordenar lo que quedó.
+
+\subsection{Comparaciones y texto literal}
+
+\campo{WHERE} conserva las filas cuya condición resulta verdadera. Los textos y fechas escritas como
+literales se rodean con comillas simples; los números no.
+
+\begin{lstlisting}
+SELECT employee_id, last_name, salary
+FROM oehr_employees
+WHERE salary >= 10000;
+
+SELECT employee_id, last_name
+FROM oehr_employees
+WHERE last_name = 'Whalen';
+\end{lstlisting}
+
+Operadores comunes: \campo{=}, \campo{<>}, \campo{>}, \campo{<}, \campo{>=} y \campo{<=}.
+
+\subsection{AND, OR, NOT y precedencia}
+
+\campo{AND} exige que ambas condiciones sean verdaderas; \campo{OR} exige al menos una;
+\campo{NOT} niega. Oracle evalúa \campo{NOT}, luego \campo{AND} y luego \campo{OR}. Usa paréntesis
+cuando el requerimiento mezcle operadores.
+
+\begin{lstlisting}
+SELECT employee_id, last_name, job_id, salary
+FROM oehr_employees
+WHERE (job_id = 'AD_PRES' OR job_id = 'SA_REP')
+  AND salary > 15000;
+\end{lstlisting}
+
+\subsection{BETWEEN e IN}
+
+\campo{BETWEEN} incluye ambos extremos. \campo{IN} compara con un conjunto de alternativas.
+
+\begin{lstlisting}
+SELECT employee_id, last_name, salary
+FROM oehr_employees
+WHERE salary BETWEEN 3000 AND 5000;
+
+SELECT employee_id, last_name, department_id
+FROM oehr_employees
+WHERE department_id IN (50, 80, 90);
+\end{lstlisting}
+
+Para excluir un conjunto usa \campo{NOT IN}, no una cadena de desigualdades unida con \campo{OR}.
+La expresión \campo{x <> 100 OR x <> 120} es prácticamente siempre verdadera.
+
+\subsection{LIKE y sus comodines}
+
+\campo{LIKE} compara patrones de texto:
+
+\begin{itemize}
+  \item \campo{\%} representa cero o más caracteres;
+  \item \campo{\_} representa exactamente un carácter.
+\end{itemize}
+
+\begin{lstlisting}
+-- Apellido que comienza con S
+WHERE last_name LIKE 'S%'
+
+-- Nombre de departamento cuya segunda letra es a y termina en s
+WHERE LOWER(department_name) LIKE '_a%s'
+
+-- Cargo cuya penultima letra es a
+WHERE LOWER(job_id) LIKE '%a_'
+\end{lstlisting}
+
+Las comparaciones de texto distinguen mayúsculas y minúsculas según los valores y la configuración.
+Una técnica del curso es normalizar el dato con \campo{UPPER} o \campo{LOWER} y comparar con un patrón
+en el mismo caso.
+
+\begin{lstlisting}
+WHERE UPPER(job_title) LIKE 'S%'
+   OR UPPER(job_id)    LIKE 'S%'
+\end{lstlisting}
+
+\subsection{NULL no es cero ni texto vacío}
+
+Un nulo representa un valor desconocido, ausente o no aplicable. No se evalúa con
+\campo{= NULL} ni \campo{<> NULL}.
+
+\begin{lstlisting}
+SELECT employee_id, last_name
+FROM oehr_employees
+WHERE commission_pct IS NULL;
+\end{lstlisting}
+
+Usa \campo{IS NOT NULL} para exigir un valor conocido.
+
+\subsection{ORDER BY}
+
+\campo{ORDER BY} se escribe al final. El orden predeterminado es ascendente; \campo{DESC} lo invierte.
+Se puede ordenar por columna, alias o posición, aunque el nombre o alias suele ser más legible.
+
+\begin{lstlisting}
+SELECT employee_id, last_name, department_id, hire_date
+FROM oehr_employees
+WHERE department_id IN (50, 80)
+ORDER BY department_id ASC, hire_date DESC, last_name ASC;
+\end{lstlisting}
+
+\begin{errorbox}
+No coloques punto y coma antes de \campo{ORDER BY}. El punto y coma termina la sentencia completa.
+\end{errorbox}
+
+\subsection{Lectura activa del módulo 2}
+
+\begin{enumerate}[label=\textbf{M2.\arabic*}]
+  \item \nivel{Muy fácil.} ¿Qué operador comprueba si una columna es nula?
+  \item \nivel{Muy fácil.} En \campo{LIKE}, ¿qué representa \campo{\_}?
+  \item \nivel{Muy fácil.} ¿Qué palabra ordena de mayor a menor?
+  \item \nivel{Intermedia.} Muestra empleados de los departamentos 50 u 80 cuyo sueldo esté entre
+  4000 y 9000, incluidos los límites.
+  \item \nivel{Intermedia.} Escribe el patrón para apellidos cuya segunda letra sea \campo{a} y cuya
+  última letra sea \campo{s}, ignorando mayúsculas.
+  \item \nivel{Difícil.} Muestra empleados que pertenezcan a los departamentos 50, 80 o 90 y que
+  además no tengan comisión, ordenados por departamento ascendente y sueldo descendente.
+\end{enumerate}
+
+\section{Módulo 3: funciones de una sola fila}
+
+\begin{objetivo}
+Transformar texto, números y fechas sin cambiar la cantidad de filas de entrada.
+\end{objetivo}
+
+Las funciones de una sola fila son pequeñas transformaciones aplicadas independientemente a cada
+registro. Si entran 107 empleados y no existe un filtro, una expresión con \campo{UPPER},
+\campo{SUBSTR} o \campo{ROUND} sigue produciendo 107 resultados; no resume el conjunto. Para decidir
+qué función usar, identifica primero el tipo de dato que tienes y el tipo de resultado que necesitas.
+Con texto puedes cambiar capitalización, medir longitud, buscar una posición o extraer un fragmento.
+Por ejemplo, crear un correo exige descomponer el requerimiento en piezas: extraer la primera letra
+con \campo{SUBSTR(first_name,1,1)}, añadir el apellido y finalmente el dominio. Con números,
+\campo{ROUND} y \campo{TRUNC} responden a preguntas diferentes: el primero aproxima al valor más
+cercano y el segundo elimina las posiciones que sobran. Con fechas, Oracle almacena un valor de fecha,
+no simplemente el texto que ves en pantalla. Por ello puede restar fechas para obtener días, sumar
+días o emplear funciones que navegan por meses. Si calculas semanas trabajadas, la resta
+\campo{SYSDATE-hire_date} entrega días, la división por siete los transforma en semanas y
+\campo{TRUNC} elimina la parte de semana incompleta. Este razonamiento por unidades evita usar
+funciones al azar. \tabla{DUAL} aparece cuando deseas evaluar una expresión sin recorrer una tabla de
+negocio: permite comprobar cuánto devuelve \campo{ROUND(45.5674,2)} o cuál es la fecha actual. Las
+funciones pueden anidarse, y Oracle evalúa desde la más interna hacia afuera. En
+\campo{UPPER(SUBSTR(first_name,1,1))}, primero se extrae y luego se convierte. Antes de escribir una
+expresión compleja, dibuja sus pasos y comprueba el tipo que sale de cada uno. Una función correcta
+con argumentos incorrectos puede producir un resultado válido sintácticamente, pero distinto del que
+el problema solicita.
+
+Una función de una sola fila recibe valores de una fila y devuelve un resultado por esa fila. Puede
+usarse en \campo{SELECT}, \campo{WHERE} y \campo{ORDER BY}, respetando los tipos de datos.
+
+\subsection{Funciones de caracteres}
+
+\begin{longtable}{p{0.25\textwidth} p{0.65\textwidth}}
+\toprule
+\textbf{Función} & \textbf{Idea y ejemplo} \\
+\midrule
+\endhead
+\campo{UPPER(texto)} & Convierte a mayúsculas: \campo{UPPER(last\_name)}. \\
+\campo{LOWER(texto)} & Convierte a minúsculas: \campo{LOWER(email)}. \\
+\campo{INITCAP(texto)} & Coloca en mayúscula la inicial de cada palabra. \\
+\campo{CONCAT(a,b)} & Une dos valores; para más valores, anida o usa \campo{||}. \\
+\campo{SUBSTR(t,p,n)} & Extrae \campo{n} caracteres de \campo{t} desde la posición \campo{p}. Una
+posición negativa cuenta desde el final. \\
+\campo{LENGTH(texto)} & Devuelve la cantidad de caracteres. \\
+\campo{INSTR(t,b)} & Devuelve la posición donde comienza \campo{b} dentro de \campo{t}; si no lo
+encuentra, devuelve cero. \\
+\bottomrule
+\end{longtable}
+
+Ejemplo del estilo de la clase: crear un correo con la primera letra del nombre, el apellido y un
+dominio.
+
+\begin{lstlisting}
+SELECT employee_id,
+       UPPER(SUBSTR(first_name, 1, 1) ||
+             last_name || '@SQL.CL') AS email_propuesto
+FROM oehr_employees;
+\end{lstlisting}
+
+Para extraer el último carácter se puede usar \campo{SUBSTR(texto,-1,1)}. Para quitar el penúltimo
+carácter conviene razonar en segmentos: parte anterior, último carácter y dominio.
+
+\subsection{Funciones numéricas y DUAL}
+
+\campo{ROUND} redondea, \campo{TRUNC} corta sin redondear y \campo{MOD} calcula el resto de una
+división.
+
+\begin{lstlisting}
+SELECT ROUND(45.5674, 2) AS redondeado,
+       TRUNC(45.5674, 2) AS truncado,
+       MOD(54, 5)        AS resto
+FROM dual;
+\end{lstlisting}
+
+Resultado conceptual: \campo{45.57}, \campo{45.56} y \campo{4}. \tabla{DUAL} es una tabla especial
+de una fila útil cuando la expresión no depende de datos de una tabla del usuario.
+
+\begin{errorbox}
+La sintaxis correcta es \campo{MOD(54,3)}, no \campo{MOD(54/3)}. En una sesión configurada con punto
+decimal, escribe \campo{45.5674}; una coma separaría argumentos.
+\end{errorbox}
+
+\subsection{Aritmética y funciones de fecha}
+
+En Oracle, sumar un número a una fecha agrega días y restar dos fechas produce una diferencia en
+días. \campo{SYSDATE} devuelve la fecha y hora actuales del servidor.
+
+\begin{lstlisting}
+SELECT employee_id,
+       hire_date,
+       TRUNC((SYSDATE - hire_date) / 7) AS semanas_trabajadas
+FROM oehr_employees
+WHERE department_id IN (50, 80)
+ORDER BY semanas_trabajadas;
+\end{lstlisting}
+
+Otras funciones del material:
+
+\begin{itemize}
+  \item \campo{MONTHS\_BETWEEN(fecha1,fecha2)}: diferencia aproximada en meses;
+  \item \campo{ADD\_MONTHS(fecha,n)}: suma o resta meses;
+  \item \campo{NEXT\_DAY(fecha,'MONDAY')}: siguiente día indicado posterior a la fecha;
+  \item \campo{LAST\_DAY(fecha)}: último día del mes;
+  \item \campo{ROUND(fecha,formato)} y \campo{TRUNC(fecha,formato)}: redondean o truncan fechas.
+\end{itemize}
+
+\begin{lstlisting}
+SELECT employee_id,
+       hire_date,
+       ADD_MONTHS(hire_date, 6) AS revision,
+       LAST_DAY(hire_date)      AS fin_mes_contrato
+FROM oehr_employees;
+\end{lstlisting}
+
+Los nombres de días empleados por \campo{NEXT\_DAY} pueden depender del idioma de la sesión. En una
+prueba, sigue la configuración indicada por el profesor.
+
+\subsection{Lectura activa del módulo 3}
+
+\begin{enumerate}[label=\textbf{M3.\arabic*}]
+  \item \nivel{Muy fácil.} ¿Qué función convierte un texto a mayúsculas?
+  \item \nivel{Muy fácil.} ¿Qué diferencia esencial existe entre \campo{ROUND} y \campo{TRUNC}?
+  \item \nivel{Muy fácil.} ¿Para qué se usa \tabla{DUAL}?
+  \item \nivel{Intermedia.} Construye un correo formado por las dos primeras letras del nombre, un
+  punto, el apellido y \campo{@ucm.cl}, todo en minúsculas.
+  \item \nivel{Intermedia.} Calcula los años completos aproximados trabajados dividiendo los meses
+  obtenidos con \campo{MONTHS\_BETWEEN} por 12 y truncando el resultado.
+  \item \nivel{Difícil.} Genera el identificador formado por la última letra del apellido, la primera
+  letra del nombre y la longitud total de ambos nombres concatenados, todo en mayúsculas.
+\end{enumerate}
+
+\section{Módulo 4: conversiones, formatos, nulos y decisiones}
+
+\begin{objetivo}
+Controlar explícitamente los tipos de datos, mostrar fechas y dinero con formato y producir valores
+alternativos cuando existan nulos.
+\end{objetivo}
+
+Los datos poseen tipos y Oracle necesita saber qué operaciones tienen sentido para cada tipo. Un
+número puede sumarse, una fecha puede compararse cronológicamente y un texto puede concatenarse. A
+veces Oracle intenta convertir automáticamente un tipo en otro, pero esa conversión implícita depende
+de la configuración de la sesión. El texto \campo{'01/02/2025'} podría interpretarse como primero de
+febrero o dos de enero; por eso una consulta estable usa \campo{TO_DATE} con un formato explícito.
+\campo{TO_CHAR} realiza el camino contrario cuando el objetivo es presentar el valor, no seguir
+calculando con él. Formatear \campo{salary} como dinero produce texto visual; si después necesitas
+promediar, debes conservar el número original para el cálculo y formatear sólo el resultado final. Los
+nulos exigen otra decisión. \campo{NVL(commission_pct,0)} afirma una regla de negocio para esa
+expresión: cuando la comisión falta, será tratada como cero. Eso permite multiplicar el sueldo sin que
+el nulo se propague. No significa que la base de datos haya guardado cero ni que ambos conceptos sean
+siempre equivalentes. \campo{NVL2} y \campo{CASE} permiten producir mensajes diferentes según la
+existencia o el valor de un dato. En una rama condicional, todos los resultados deben poder convertirse
+a tipos compatibles. Si una rama devuelve dinero formateado y otra el texto \campo{'SIN COMISION'},
+conviene que ambas devuelvan texto: se aplica \campo{TO_CHAR} al monto en la primera rama. La regla
+práctica es separar tres fases: calcular usando números o fechas reales, decidir usando condiciones y
+formatear al final para mostrar. Esta separación evita comparar fechas como palabras, ordenar montos
+por su símbolo monetario o sumar cadenas que sólo parecen números.
+
+\subsection{Conversión explícita}
+
+Oracle puede hacer algunas conversiones implícitas, pero dependen de la configuración y pueden
+fallar. Una solución robusta expresa la conversión.
+
+\begin{longtable}{p{0.31\textwidth} p{0.59\textwidth}}
+\toprule
+\textbf{Función} & \textbf{Uso} \\
+\midrule
+\endhead
+\campo{TO\_CHAR(fecha,formato)} & Convierte una fecha en texto controlando su representación. \\
+\campo{TO\_CHAR(número,formato)} & Convierte un número en texto, por ejemplo para moneda. \\
+\campo{TO\_NUMBER(texto,formato)} & Convierte texto numérico en número. \\
+\campo{TO\_DATE(texto,formato)} & Interpreta texto como fecha usando un modelo explícito. \\
+\bottomrule
+\end{longtable}
+
+\begin{lstlisting}
+SELECT employee_id,
+       TO_CHAR(hire_date, 'DD "DE" MONTH "DE" YYYY') AS fecha,
+       TO_CHAR(salary, 'FM$999,999,990.00')           AS sueldo
+FROM oehr_employees;
+\end{lstlisting}
+
+\campo{FM} reduce los espacios de relleno del formato. Las palabras literales dentro de un formato de
+fecha se rodean con comillas dobles dentro del texto SQL.
+
+\begin{lstlisting}
+SELECT employee_id, last_name, hire_date
+FROM oehr_employees
+WHERE hire_date >= TO_DATE('2016-01-01', 'YYYY-MM-DD')
+ORDER BY hire_date;
+\end{lstlisting}
+
+Esto es preferible a comparar con \campo{'01/01/2016'}, porque el significado de ese texto depende de
+\campo{NLS\_DATE\_FORMAT}.
+
+\subsection{NVL y NVL2}
+
+\campo{NVL(valor,reemplazo)} devuelve el reemplazo sólo si el valor es nulo. Ambos deben ser de tipos
+compatibles.
+
+\begin{lstlisting}
+SELECT employee_id,
+       salary,
+       NVL(commission_pct, 0) AS comision,
+       salary * NVL(commission_pct, 0) AS monto_comision
+FROM oehr_employees;
+\end{lstlisting}
+
+\campo{NVL2(valor,si_no_es_nulo,si_es_nulo)} elige entre dos resultados.
+
+\begin{lstlisting}
+SELECT employee_id,
+       NVL2(commission_pct,
+            TO_CHAR(commission_pct * 100, 'FM990') || '%',
+            'SIN COMISION') AS estado_comision
+FROM oehr_employees;
+\end{lstlisting}
+
+\subsection{COALESCE y NULLIF}
+
+\campo{COALESCE(a,b,c)} devuelve el primer valor no nulo. \campo{NULLIF(a,b)} devuelve nulo cuando
+ambos valores son iguales; en caso contrario devuelve \campo{a}.
+
+\begin{lstlisting}
+SELECT employee_id,
+       COALESCE(TO_CHAR(commission_pct),
+                TO_CHAR(manager_id),
+                'SIN COMISION NI JEFE') AS dato_disponible
+FROM oehr_employees;
+\end{lstlisting}
+
+\subsection{CASE y DECODE}
+
+\campo{CASE} permite expresar decisiones legibles y es parte del estándar SQL.
+
+\begin{lstlisting}
+SELECT employee_id, salary,
+       CASE
+         WHEN salary >= 15000 THEN 'ALTO'
+         WHEN salary >= 8000  THEN 'MEDIO'
+         ELSE 'BAJO'
+       END AS tramo_sueldo
+FROM oehr_employees;
+\end{lstlisting}
+
+\campo{DECODE} es una función propia de Oracle útil para equivalencias simples.
+
+\begin{lstlisting}
+SELECT employee_id, department_id,
+       DECODE(department_id,
+              10, 'ADMINISTRACION',
+              20, 'MARKETING',
+              'OTRO') AS area
+FROM oehr_employees;
+\end{lstlisting}
+
+Para rangos y condiciones compuestas suele ser más claro \campo{CASE}. Para una equivalencia corta,
+\campo{DECODE} puede ser suficiente.
+
+\subsection{Lectura activa del módulo 4}
+
+\begin{enumerate}[label=\textbf{M4.\arabic*}]
+  \item \nivel{Muy fácil.} ¿Qué función convierte una fecha en texto formateado?
+  \item \nivel{Muy fácil.} ¿Qué devuelve \campo{NVL(NULL,0)}?
+  \item \nivel{Muy fácil.} ¿Qué función devuelve el primer argumento no nulo de una lista?
+  \item \nivel{Intermedia.} Muestra el sueldo con dos decimales y la fecha de contratación con el
+  formato \campo{YYYY-MM-DD}.
+  \item \nivel{Intermedia.} Muestra \campo{CON COMISION} o \campo{SIN COMISION} según
+  \campo{commission\_pct}, utilizando \campo{CASE}.
+  \item \nivel{Difícil.} Muestra nombre completo, sueldo con formato monetario y monto de comisión
+  con formato monetario; quienes no tengan comisión deben mostrar \campo{SIN COMISION} en la última
+  columna. Evita mezclar números y textos incompatibles.
+\end{enumerate}
+
+\section{Módulo 5: funciones de grupo, GROUP BY y HAVING}
+
+\begin{objetivo}
+Resumir muchas filas en resultados por empresa, departamento o cargo, y filtrar esos resultados.
+\end{objetivo}
+
+Agrupar significa cambiar la unidad de análisis. En una consulta común, la unidad es una fila de
+empleado; después de \campo{GROUP BY department_id}, la unidad pasa a ser un departamento compuesto
+por todas sus filas de empleados. Las funciones de grupo responden preguntas sobre ese conjunto:
+cuántos miembros tiene, cuánto suman sus sueldos, cuál es el promedio o cuáles son los extremos. Esta
+transformación explica la regla de \campo{GROUP BY}: si el resultado representa una fila por
+departamento, Oracle no puede mostrar libremente \campo{last_name}, porque dentro del grupo existen
+muchos apellidos y no hay una única respuesta. Debes agrupar también por apellido, resumirlo con una
+función apropiada o retirarlo. El orden conceptual ayuda a ubicar filtros. \campo{WHERE} actúa cuando
+todavía existen empleados individuales; por eso sirve para limitar el estudio a departamentos 50, 80
+y 90 antes de agrupar. \campo{HAVING} actúa cuando ya existe cada grupo y sus valores calculados; por
+eso puede preguntar si \campo{AVG(salary)>8000} o si \campo{COUNT(*)>=2}. En la pauta, la diferencia
+\campo{MAX(salary)-MIN(salary)} sólo existe después de reunir los empleados de cada cargo, de modo que
+debe escribirse en \campo{HAVING}. También hay que pensar cuidadosamente en nulos:
+\campo{COUNT(*)} cuenta filas, mientras \campo{COUNT(commission_pct)} cuenta únicamente valores de
+comisión conocidos. Del mismo modo, \campo{AVG(commission_pct)} ignora empleados sin comisión, pero
+\campo{AVG(NVL(commission_pct,0))} los incorpora como cero y responde otra pregunta. Para verificar
+una consulta agrupada, toma un grupo imaginario de tres filas, calcula manualmente la función y
+pregunta si cada columna visible posee exactamente un valor para ese grupo. Si no lo posee, el diseño
+del \campo{SELECT} y del \campo{GROUP BY} aún no está completo.
+
+\subsection{Funciones de grupo}
+
+\begin{itemize}
+  \item \campo{COUNT(*)}: cuenta filas.
+  \item \campo{COUNT(columna)}: cuenta valores no nulos de esa columna.
+  \item \campo{COUNT(DISTINCT columna)}: cuenta valores diferentes no nulos.
+  \item \campo{SUM(columna)}: suma valores no nulos.
+  \item \campo{AVG(columna)}: promedio de valores no nulos.
+  \item \campo{MIN(columna)} y \campo{MAX(columna)}: extremos del conjunto.
+\end{itemize}
+
+\begin{lstlisting}
+SELECT ROUND(AVG(salary), 0) AS promedio,
+       MIN(hire_date)        AS primera_contratacion,
+       MAX(hire_date)        AS ultima_contratacion,
+       COUNT(*)              AS cantidad_filas
+FROM oehr_employees;
+\end{lstlisting}
+
+Las funciones ignoran nulos salvo \campo{COUNT(*)}, que cuenta filas. Esto importa al promediar
+comisiones. \campo{AVG(commission\_pct)} promedia únicamente empleados con comisión;
+\campo{AVG(NVL(commission\_pct,0))} incluye al resto como cero. No significan lo mismo.
+
+\subsection{GROUP BY}
+
+Sin \campo{GROUP BY}, la función resume todas las filas filtradas en un solo grupo. Con
+\campo{GROUP BY}, produce un resultado por cada combinación diferente de columnas agrupadas.
+
+\begin{lstlisting}
+SELECT department_id,
+       ROUND(AVG(salary), 0) AS promedio_sueldo
+FROM oehr_employees
+GROUP BY department_id
+ORDER BY department_id;
+\end{lstlisting}
+
+Regla esencial: toda expresión del \campo{SELECT} que no sea agregada debe ser compatible con las
+expresiones del \campo{GROUP BY}.
+
+\begin{lstlisting}
+SELECT department_id,
+       job_id,
+       TO_CHAR(SUM(salary), 'FM$999,999,990.00') AS total
+FROM oehr_employees
+GROUP BY department_id, job_id
+ORDER BY department_id, job_id;
+\end{lstlisting}
+
+\subsection{WHERE frente a HAVING}
+
+\campo{WHERE} filtra filas antes del agrupamiento; \campo{HAVING} filtra grupos después de calcular
+las funciones de grupo.
+
+\begin{lstlisting}
+SELECT department_id,
+       MAX(salary) AS sueldo_maximo
+FROM oehr_employees
+WHERE department_id BETWEEN 50 AND 90
+GROUP BY department_id
+HAVING MAX(salary) > 10000
+ORDER BY department_id DESC;
+\end{lstlisting}
+
+Lectura paso a paso:
+
+\begin{enumerate}
+  \item se conservan empleados de departamentos 50 a 90;
+  \item se forman grupos por departamento;
+  \item se calcula el máximo de cada grupo;
+  \item se conservan grupos cuyo máximo supera 10000;
+  \item se ordena el resultado.
+\end{enumerate}
+
+\begin{prueba}
+Una consulta de la pauta intenta colocar \campo{MAX(salary)-MIN(salary) <> 0} en \campo{WHERE}. Eso es
+incorrecto porque la condición sólo existe después de formar el grupo. La forma conceptual correcta
+es:
+\begin{lstlisting}
+SELECT job_id,
+       COUNT(employee_id) AS cantidad_empleados,
+       ROUND(AVG(salary), 2) AS promedio_sueldo
+FROM oehr_employees
+GROUP BY job_id
+HAVING MAX(salary) - MIN(salary) <> 0;
+\end{lstlisting}
+\end{prueba}
+
+\subsection{Lectura activa del módulo 5}
+
+\begin{enumerate}[label=\textbf{M5.\arabic*}]
+  \item \nivel{Muy fácil.} ¿Qué función calcula un promedio?
+  \item \nivel{Muy fácil.} ¿Qué diferencia hay entre \campo{COUNT(*)} y
+  \campo{COUNT(commission\_pct)}?
+  \item \nivel{Muy fácil.} ¿Qué cláusula filtra grupos?
+  \item \nivel{Intermedia.} Muestra cada \campo{job\_id} y la cantidad de empleados que lo poseen.
+  \item \nivel{Intermedia.} Muestra los departamentos cuyo sueldo promedio es mayor que 8000.
+  \item \nivel{Difícil.} Para los departamentos 50, 80 y 90, muestra departamento, cargo, cantidad
+  de empleados y promedio de sueldo. Conserva sólo combinaciones con al menos dos empleados y ordena
+  por promedio descendente.
+\end{enumerate}
+
+\section{Módulo 6: consultas de varias tablas y JOIN}
+
+\begin{objetivo}
+Combinar tablas sin producir resultados inventados, usando claves, alias y el tipo de unión correcto.
+\end{objetivo}
+
+Un \campo{JOIN} no consiste simplemente en colocar dos tablas juntas: define qué pares de filas
+representan una misma relación del mundo modelado. Supón que el requerimiento pide código del
+trabajador, nombre completo y nombre del departamento. Primero eliges
+\tabla{OEHR_EMPLOYEES} como tabla principal porque el sujeto del listado es el trabajador. Allí están
+el código y los nombres, pero sólo aparece \campo{DEPARTMENT_ID}; el texto
+\campo{DEPARTMENT_NAME} vive en \tabla{OEHR_DEPARTMENTS}. Entonces asignas alias para expresar roles,
+\campo{e} para empleado y \campo{d} para departamento, y conectas la referencia del empleado con la
+clave del departamento: \campo{e.department_id=d.department_id}. Oracle toma una fila de empleado,
+busca la fila departamental cuyo código coincide y forma una fila combinada que contiene columnas de
+ambas. Después \campo{SELECT} puede escoger \campo{e.employee_id}, los nombres de \campo{e} y
+\campo{d.department_name}. Si omites la condición, cada empleado se combina con cada departamento;
+si escribes \campo{department_id=department_id} sin alias, la intención es ambigua; y si conectas
+\campo{e.manager_id} con \campo{d.manager_id}, estarías respondiendo otra pregunta, no la pertenencia
+del empleado a un departamento. El tipo de unión depende de qué filas deben sobrevivir. Un
+\campo{INNER JOIN} conserva sólo empleados con departamento coincidente. Un
+\campo{LEFT JOIN}, colocando empleados a la izquierda, conserva además al trabajador sin
+departamento y completa las columnas de \campo{d} con nulos. Antes de elegir, busca expresiones como
+``todos los empleados'', ``aunque no tengan'' o ``sólo los que poseen''. Finalmente, anticipa la
+cardinalidad: muchos empleados pueden coincidir con un departamento, de modo que el departamento se
+repite legítimamente en varias filas. Esa repetición no es un duplicado erróneo; representa distintos
+empleados relacionados con la misma entidad.
+
+\subsection{Por qué aparece un producto cartesiano}
+
+Si se escriben varias tablas sin indicar cómo se relacionan, cada fila de una se combina con cada
+fila de la otra. Ese producto cartesiano suele producir datos incoherentes.
+
+\begin{lstlisting}
+-- Incorrecto para relacionar empleados y cargos:
+SELECT employee_id, job_title
+FROM oehr_employees, oehr_jobs;
+\end{lstlisting}
+
+\subsection{INNER JOIN con ON}
+
+Un \campo{INNER JOIN} devuelve coincidencias entre ambas tablas.
+
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.first_name || ' ' || e.last_name AS empleado,
+       j.job_title,
+       d.department_name
+FROM oehr_employees e
+JOIN oehr_jobs j
+  ON e.job_id = j.job_id
+JOIN oehr_departments d
+  ON e.department_id = d.department_id;
+\end{lstlisting}
+
+Los alias \campo{e}, \campo{j} y \campo{d} permiten calificar columnas y eliminan ambigüedades.
+Nunca escribas \campo{ON(job\_id = job\_id)}: parece comparar la columna consigo misma y, si el nombre
+existe en ambas tablas, Oracle informa ambigüedad.
+
+\subsection{USING y NATURAL JOIN}
+
+\campo{USING(columna)} es posible cuando la columna de unión tiene el mismo nombre en ambas tablas.
+Dentro de \campo{USING} no se califica la columna con alias.
+
+\begin{lstlisting}
+SELECT e.employee_id, d.department_name
+FROM oehr_employees e
+JOIN oehr_departments d
+USING (department_id);
+\end{lstlisting}
+
+\campo{NATURAL JOIN} une automáticamente todas las columnas de igual nombre. Puede ser breve, pero
+es menos explícito y puede cambiar de significado si el esquema incorpora otra columna coincidente.
+Para la prueba, \campo{JOIN ... ON} suele mostrar mejor tu razonamiento.
+
+\subsection{LEFT OUTER JOIN}
+
+Una unión interna elimina al empleado cuyo \campo{DEPARTMENT\_ID} sea nulo o no encuentre
+coincidencia. Si el requerimiento dice ``aunque no tenga departamento'', conserva la tabla de
+empleados con \campo{LEFT JOIN}.
+
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.last_name,
+       d.department_name
+FROM oehr_employees e
+LEFT JOIN oehr_departments d
+  ON e.department_id = d.department_id;
+\end{lstlisting}
+
+La tabla escrita a la izquierda es la que se preserva. \campo{RIGHT OUTER JOIN} preserva la derecha;
+\campo{FULL OUTER JOIN} preserva filas no coincidentes de ambas.
+
+\subsection{Self join para empleado y jefe}
+
+La misma tabla cumple dos roles. Se le asignan dos alias diferentes: \campo{e} es el empleado y
+\campo{jefe} es la fila del jefe.
+
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.first_name || ' ' || e.last_name AS empleado,
+       jefe.first_name || ' ' || jefe.last_name AS jefe
+FROM oehr_employees e
+LEFT JOIN oehr_employees jefe
+  ON e.manager_id = jefe.employee_id;
+\end{lstlisting}
+
+Se usa \campo{LEFT JOIN} para no perder al empleado superior que no tiene jefe. Si el enunciado sólo
+pide empleados que sí tienen jefe, un \campo{JOIN} interno es suficiente.
+
+\subsection{Cadena de uniones}
+
+Para mostrar la región en que trabaja el empleado, sigue cada clave foránea.
+
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.last_name,
+       r.region_name
+FROM oehr_employees e
+JOIN oehr_departments d ON e.department_id = d.department_id
+JOIN oehr_locations l   ON d.location_id   = l.location_id
+JOIN oehr_countries c   ON l.country_id    = c.country_id
+JOIN oehr_regions r     ON c.region_id     = r.region_id;
+\end{lstlisting}
+
+\subsection{Taller guiado: construir una unión desde cero}
+
+Imagina el requerimiento ``mostrar todos los trabajadores, el nombre de su departamento, la ciudad
+del departamento y el nombre de su cargo; deben aparecer incluso quienes no tengan departamento''.
+No conviene intentar recordar una consulta completa. Se construye por capas. Primero fija la unidad
+de salida: una fila por trabajador, de modo que \tabla{OEHR_EMPLOYEES e} debe iniciar el
+\campo{FROM}. Segundo, marca dónde vive cada dato: nombre del departamento en
+\tabla{OEHR_DEPARTMENTS d}, ciudad en \tabla{OEHR_LOCATIONS l} y título del cargo en
+\tabla{OEHR_JOBS j}. Tercero, dibuja los enlaces: \campo{e.department_id} llega a
+\campo{d.department_id}; desde esa fila, \campo{d.location_id} llega a \campo{l.location_id}; y
+\campo{e.job_id} llega directamente a \campo{j.job_id}. Cuarto, decide qué relaciones son opcionales.
+El enunciado obliga a conservar empleados sin departamento, por lo que el primer enlace departamental
+es \campo{LEFT JOIN}. La ubicación depende del departamento: si éste falta, también debe poder faltar
+la ubicación sin eliminar al empleado, por lo que el enlace hacia \campo{l} también es
+\campo{LEFT JOIN}. En cambio, \campo{JOB_ID} es obligatorio según la definición de empleados; un
+\campo{JOIN} interno con cargos es razonable. Quinto, escribe el \campo{SELECT} calificando cada
+columna. Si más tarde se pide sólo empleados de Santiago, existe una decisión semántica importante:
+\campo{WHERE l.city='Santiago'} eliminará las filas cuya ciudad sea nula y, en la práctica, perderás
+los empleados sin departamento. Si quieres conservarlos, el requisito debe formularse de otra forma,
+por ejemplo permitiendo explícitamente \campo{l.city IS NULL}. Esta interacción muestra que elegir
+\campo{LEFT JOIN} no garantiza por sí sola la preservación: un filtro posterior sobre la tabla opcional
+puede volver a descartarla. Finalmente, revisa la cantidad esperada de filas. Cada empleado tiene como
+máximo un departamento, una ubicación y un cargo, así que esta cadena no debería multiplicar a un
+empleado. Si apareciera repetido, revisa las claves antes de agregar \campo{DISTINCT}.
+
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.first_name || ' ' || e.last_name AS empleado,
+       d.department_name,
+       l.city,
+       j.job_title
+FROM oehr_employees e
+LEFT JOIN oehr_departments d
+  ON e.department_id = d.department_id
+LEFT JOIN oehr_locations l
+  ON d.location_id = l.location_id
+JOIN oehr_jobs j
+  ON e.job_id = j.job_id
+ORDER BY d.department_name, e.last_name;
+\end{lstlisting}
+
+\begin{clave}
+La ``X manera'' de juntar tablas no se adivina: se determina respondiendo tres preguntas. ¿Cuál es la
+tabla que define una fila del resultado? ¿Qué pares PK--FK representan el camino hacia los datos que
+faltan? ¿Deben sobrevivir las filas sin coincidencia? Las respuestas determinan el orden de las tablas,
+las condiciones \campo{ON} y si corresponde \campo{JOIN} o \campo{LEFT JOIN}.
+\end{clave}
+
+\subsection{Unión no equitativa y CROSS JOIN}
+
+Una unión no equitativa usa un operador distinto de igualdad, por ejemplo para ubicar un sueldo entre
+un mínimo y un máximo. Sólo puede practicarse si existe una tabla de rangos adecuada.
+\campo{CROSS JOIN} expresa deliberadamente un producto cartesiano; no debe aparecer por accidente.
+
+\subsection{Lectura activa del módulo 6}
+
+\begin{enumerate}[label=\textbf{M6.\arabic*}]
+  \item \nivel{Muy fácil.} ¿Qué cláusula indica la condición que conecta dos tablas?
+  \item \nivel{Muy fácil.} ¿Para qué sirven los alias de tabla?
+  \item \nivel{Muy fácil.} ¿Qué tipo de unión conserva empleados sin departamento?
+  \item \nivel{Intermedia.} Muestra código, apellido y título del cargo de cada empleado.
+  \item \nivel{Intermedia.} Muestra apellido del empleado, departamento y ciudad.
+  \item \nivel{Difícil.} Muestra código, nombre completo, nombre del departamento, nombre completo
+  del jefe del departamento, ciudad y título del cargo. Conserva al empleado aunque su departamento
+  o el jefe del departamento sea nulo.
+\end{enumerate}
+
+\section{Módulo 7: subconsultas}
+
+\begin{objetivo}
+Usar el resultado de una consulta como criterio de otra consulta y decidir si corresponde
+\campo{=}, \campo{IN} u otro operador.
+\end{objetivo}
+
+Una subconsulta resuelve una pregunta auxiliar cuyo resultado necesita la consulta principal. La
+forma más segura de construirla es verbalizar dos preguntas separadas. Para ``mostrar todos los
+empleados que trabajan en los departamentos de Whalen o King'', la pregunta interior es ``¿cuáles son
+los códigos de departamento de Whalen o King?'' y devuelve una lista de
+\campo{DEPARTMENT_ID}. La pregunta exterior es ``¿qué empleados tienen un código contenido en esa
+lista?''. Como puede haber más de un código, se usa \campo{IN}; emplear \campo{=} supondría una sola
+fila y produciría un error si aparecen varias. El hecho de que una consulta esté escrita dentro de
+otra no cambia las reglas ya aprendidas: la interna posee su propio \campo{SELECT}, \campo{FROM} y
+\campo{WHERE}, y puede incluir agrupamiento. Conviene ejecutarla mentalmente o por separado, comprobar
+qué columna y cuántas filas produce, y recién entonces elegir el operador exterior. Una subconsulta
+que calcula \campo{AVG(salary)} sin agrupar garantiza un solo valor y puede compararse con
+\campo{>}; una que selecciona cargos de un departamento normalmente produce varios valores y pide
+\campo{IN}. Luego debes distinguir subconsulta de unión. Una unión aporta columnas de otra tabla a
+cada fila de salida; una subconsulta usada en \campo{WHERE} aporta un criterio para decidir qué filas
+pasan. Ambas pueden convivir: la consulta exterior une departamentos para mostrar su nombre, mientras
+la interior descubre los códigos permitidos. Presta atención a los nulos con \campo{NOT IN}: si la
+lista interior contiene un nulo, las comparaciones pueden quedar desconocidas. En ejercicios
+introductorios puedes filtrar \campo{IS NOT NULL}; más adelante \campo{NOT EXISTS} ofrece otra forma
+de expresar ausencia. El objetivo no es anidar por complejidad, sino dividir un problema grande en
+preguntas pequeñas cuyos resultados encajan por tipo y cardinalidad.
+
+Una subconsulta es una consulta encerrada entre paréntesis. Primero se razona la consulta interior y
+luego se usa su resultado en la exterior.
+
+\subsection{Subconsulta de una fila}
+
+Si la consulta interior garantiza un solo valor, puede compararse con \campo{=}, \campo{>}, etc.
+
+\begin{lstlisting}
+SELECT employee_id, last_name, salary
+FROM oehr_employees
+WHERE salary > (
+  SELECT AVG(salary)
+  FROM oehr_employees
+);
+\end{lstlisting}
+
+La consulta interior produce un promedio; la exterior conserva empleados sobre ese promedio.
+
+\subsection{Subconsulta de varias filas con IN}
+
+Si la subconsulta puede devolver varios departamentos, \campo{=} no sirve; se necesita \campo{IN}.
+
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.first_name || ' ' || e.last_name AS empleado,
+       d.department_name
+FROM oehr_employees e
+JOIN oehr_departments d
+  ON e.department_id = d.department_id
+WHERE e.department_id IN (
+  SELECT department_id
+  FROM oehr_employees
+  WHERE UPPER(last_name) IN ('WHALEN', 'KING')
+);
+\end{lstlisting}
+
+Éste es el patrón de la quinta consulta visible en la pauta. La subconsulta responde ``¿en qué
+departamentos trabajan Whalen o King?''; la consulta externa obtiene todos los empleados de esos
+departamentos.
+
+\subsection{Subconsultas y valores nulos}
+
+\campo{NOT IN} puede dar resultados inesperados si la subconsulta devuelve algún nulo, porque la
+comparación pasa a ser desconocida. Cuando exista esa posibilidad, filtra los nulos en la subconsulta
+o estudia \campo{NOT EXISTS}. Para el patrón confirmado de la pauta se usa \campo{IN}, por lo que el
+problema no es central, pero conviene reconocerlo.
+
+\subsection{Lectura activa del módulo 7}
+
+\begin{enumerate}[label=\textbf{M7.\arabic*}]
+  \item \nivel{Muy fácil.} ¿Entre qué signos se escribe una subconsulta?
+  \item \nivel{Muy fácil.} Si la subconsulta devuelve varios valores, ¿qué operador permite comparar
+  contra todos ellos?
+  \item \nivel{Muy fácil.} ¿Qué consulta debes comprender primero: la interna o la externa?
+  \item \nivel{Intermedia.} Muestra empleados que ganan más que el sueldo promedio del departamento
+  90.
+  \item \nivel{Intermedia.} Muestra empleados cuyo cargo sea uno de los cargos que existen en el
+  departamento 50.
+  \item \nivel{Difícil.} Muestra código, nombre y departamento de quienes trabajan en un departamento
+  que contiene al menos un empleado cuyo sueldo supera 12000. No escribas manualmente los códigos de
+  departamento.
+\end{enumerate}
+
+\ifmostrarSoluciones
+\section{Pauta razonada de los seis requerimientos}
+
+Esta pauta se alinea con los seis requerimientos del documento de evaluación. No debe memorizarse
+literalmente: primero resuelve cada ejercicio, luego compara la estructura y explica con tus propias
+palabras por qué se utilizó cada cláusula.
+
+\subsection{Ejercicio 1: texto y patrón}
+
+\textbf{Habilidades:} concatenación, \campo{UPPER}, \campo{LIKE}, \campo{OR}.
+
+\begin{lstlisting}
+SELECT 'El codigo del cargo ' || job_title ||
+       ' es: ' || job_id AS "CARGO",
+       min_salary AS "SUELDO MINIMO"
+FROM oehr_jobs
+WHERE UPPER(job_title) LIKE 'S%'
+   OR UPPER(job_id)    LIKE 'S%';
+\end{lstlisting}
+
+Comprueba que la frase, el sueldo mínimo y ambos criterios de búsqueda estén presentes. El nombre
+definido en el esquema es \tabla{OEHR\_JOBS}.
+
+\subsection{Ejercicio 2: resumen por cargo}
+
+\textbf{Habilidades:} \campo{COUNT}, \campo{AVG}, \campo{MIN}, \campo{MAX},
+\campo{GROUP BY} y \campo{HAVING}.
+
+\begin{lstlisting}
+SELECT job_id AS "OFICIO",
+       COUNT(employee_id) AS "CANTIDAD EMPLEADOS",
+       ROUND(AVG(salary), 2) AS "PROMEDIO DE SUELDOS",
+       MAX(salary) - MIN(salary) AS "DIFERENCIA SUELDOS"
+FROM oehr_employees
+GROUP BY job_id
+HAVING MAX(salary) - MIN(salary) <> 0;
+\end{lstlisting}
+
+La condición agregada pertenece a \campo{HAVING}, porque se evalúa después de formar cada grupo. La
+diferencia también debe aparecer en la salida, ya que el enunciado la solicita explícitamente.
+
+\subsection{Ejercicio 3: empleado, departamento y jefe}
+
+\textbf{Habilidades:} unión normal, auto-unión y alias de tabla. El enunciado pide al jefe del
+departamento, por lo que el segundo enlace nace en \campo{d.manager\_id}; no en
+\campo{e.manager\_id}, que representa al jefe directo del empleado.
+
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.first_name || ' ' || e.last_name AS empleado,
+       d.department_name,
+       jefe.first_name || ' ' || jefe.last_name AS jefe
+FROM oehr_employees e
+JOIN oehr_departments d
+  ON e.department_id = d.department_id
+JOIN oehr_employees jefe
+  ON d.manager_id = jefe.employee_id;
+\end{lstlisting}
+
+Si una variante exigiera conservar empleados sin departamento o departamentos sin jefe, se usarían
+\campo{LEFT JOIN}. En la respuesta de referencia se emplea \campo{JOIN}, porque se solicitan datos
+asociados de las tres filas.
+
+\subsection{Ejercicio 4: promedio del mínimo salarial por cargo}
+
+El fragmento de pauta es ambiguo: \tabla{OEHR\_JOBS} posee una sola fila por \campo{JOB\_ID}, de modo
+que promediar \campo{MIN\_SALARY} por ese mismo código no agrega información. Una reconstrucción
+sintácticamente válida es:
+
+\begin{lstlisting}
+SELECT job_id,
+       AVG(min_salary) AS promedio_minimo
+FROM oehr_jobs
+GROUP BY job_id
+HAVING AVG(min_salary) > 3000;
+\end{lstlisting}
+
+Pedagógicamente, lo importante es reconocer que una condición sobre \campo{AVG} se escribe en
+\campo{HAVING}. En una prueba real se debe leer el enunciado completo antes de decidir si la tabla o
+el agrupamiento son realmente esos.
+
+\subsection{Ejercicio 5: departamentos de Whalen o King}
+
+\textbf{Habilidades:} \campo{JOIN}, concatenación y subconsulta multirregistro con \campo{IN}.
+
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.first_name || ' ' || e.last_name AS empleado,
+       d.department_name
+FROM oehr_employees e
+JOIN oehr_departments d
+  ON e.department_id = d.department_id
+WHERE e.department_id IN (
+  SELECT department_id
+  FROM oehr_employees
+  WHERE UPPER(last_name) IN ('WHALEN', 'KING')
+)
+ORDER BY d.department_name, e.last_name;
+\end{lstlisting}
+
+La subconsulta puede devolver más de un departamento: King no identifica necesariamente una única
+fila. Por esa razón se compara con \campo{IN} y no con el operador \campo{=}.
+
+\subsection{Ejercicio 6: comisión, rango, correo y departamento de Kochhar}
+
+\textbf{Habilidades:} concatenación, \campo{SUBSTR}, nulos, \campo{NOT BETWEEN}, conectores lógicos
+y subconsulta.
+
+\begin{lstlisting}
+SELECT e.first_name || ' ' || e.last_name AS "NOMBRE EMPLEADO",
+       SUBSTR(e.first_name, 1, 1) ||
+       SUBSTR(e.last_name, 2, 1) ||
+       e.job_id || '@pruebasql.cl' AS "NUEVO CORREO",
+       e.commission_pct AS "COMISION"
+FROM oehr_employees e
+WHERE e.commission_pct IS NOT NULL
+  AND e.salary NOT BETWEEN 5000 AND 10000
+  AND e.department_id IN (
+    SELECT department_id
+    FROM oehr_employees
+    WHERE UPPER(first_name) = 'NEENA'
+      AND UPPER(last_name) = 'KOCHHAR'
+  );
+\end{lstlisting}
+
+La frase ``tengan una comisión asociada'' se interpreta como
+\campo{commission\_pct IS NOT NULL}. ``Fuera del rango'' se expresa con
+\campo{NOT BETWEEN}; los extremos 5000 y 10000 quedan fuera del resultado porque
+\campo{BETWEEN} es inclusivo.
+\fi
+
+\section{Lista de errores que debes poder diagnosticar}
+
+\begin{longtable}{p{0.42\textwidth} p{0.50\textwidth}}
+\toprule
+\textbf{Error} & \textbf{Corrección razonada} \\
+\midrule
+\endhead
+\campo{OHER\_JOBS} & El esquema define \campo{OEHR\_JOBS}. \\
+\campo{DEPARMENT\_ID} & La columna es \campo{DEPARTMENT\_ID}. \\
+Alias con comillas simples & Usa alias sin comillas o con comillas dobles. \\
+Falta una coma en \campo{SELECT} & Cada expresión seleccionada se separa con coma. \\
+Punto y coma antes de terminar & Escribe un único punto y coma al final. \\
+\campo{WHERE MAX(salary)>...} & Una condición agregada corresponde a \campo{HAVING}. \\
+Columna normal junto a \campo{AVG} sin agrupar & Agrega la columna a \campo{GROUP BY} o quítala del
+\campo{SELECT}. \\
+\campo{commission\_pct = NULL} & Usa \campo{IS NULL}. \\
+\campo{ON(job\_id=job\_id)} & Califica ambos lados con alias de tabla. \\
+Varias tablas sin unión & Escribe cada relación mediante \campo{JOIN ... ON}. \\
+\campo{CONCAT(a,b,c)} & Usa \campo{a || b || c} o anida \campo{CONCAT}. \\
+Fecha como texto ambiguo & Usa \campo{TO\_DATE(texto,formato)}. \\
+\campo{MOD(54/3)} & La función recibe dos argumentos: \campo{MOD(54,3)}. \\
+Cadena de \campo{<>} unida con \campo{OR} & Usa \campo{NOT IN (...)} o une correctamente con
+\campo{AND}. \\
+\bottomrule
+\end{longtable}
+
+\section{Pauta de autoevaluación alineada con la rúbrica}
+
+Para cada fila marca los criterios comprobados y luego asigna un nivel: Destacado = 5,
+Competente = 4, Básico = 3 y En desarrollo = 1. Los criterios internos orientan la corrección, pero
+cada fila aporta como máximo 5 puntos. La suma máxima es 35.
+
+\begin{longtable}{p{0.13\textwidth} p{0.67\textwidth} p{0.10\textwidth}}
+\toprule
+\textbf{Ítem} & \textbf{Criterios observables} & \textbf{Nivel} \\
+\midrule
+\endhead
+Formalidad & \casilla{} archivo \campo{.sql}; \casilla{} nombre del archivo correcto;
+\casilla{} encabezado con datos; \casilla{} un comentario por requerimiento; \casilla{} código
+ordenado y entregable. & /5 \\
+R1 & \casilla{} muestra frase y sueldo mínimo; \casilla{} concatena; \casilla{} usa
+\campo{UPPER}; \casilla{} filtra con \campo{LIKE 'S\%'}; \casilla{} conecta ambos criterios con
+\campo{OR}. & /5 \\
+R2 & \casilla{} muestra las cuatro métricas; \casilla{} usa \campo{COUNT} y \campo{AVG};
+\casilla{} calcula \campo{MAX-MIN}; \casilla{} agrupa por oficio; \casilla{} filtra la diferencia
+con \campo{HAVING}. & /5 \\
+R3 & \casilla{} muestra los cuatro datos; \casilla{} usa dos \campo{JOIN}; \casilla{} escribe cada
+\campo{ON}; \casilla{} usa alias de tabla; \casilla{} obtiene al jefe desde
+\campo{d.manager\_id}. & /5 \\
+R4 & \casilla{} muestra el código de oficio; \casilla{} calcula \campo{AVG(min\_salary)};
+\casilla{} agrupa por oficio; \casilla{} usa \campo{HAVING}; \casilla{} compara el promedio con
+3000. & /5 \\
+R5 & \casilla{} muestra código, nombre y departamento; \casilla{} concatena nombre y apellido;
+\casilla{} une empleados y departamentos; \casilla{} la subconsulta busca Whalen o King;
+\casilla{} compara con \campo{IN}. & /5 \\
+R6 & \casilla{} construye el correo pedido; \casilla{} exige comisión con \campo{IS NOT NULL};
+\casilla{} usa \campo{NOT BETWEEN}; \casilla{} combina condiciones con \campo{AND};
+\casilla{} obtiene el departamento de Neena Kochhar mediante subconsulta. & /5 \\
+\midrule
+\textbf{Total} & Escribe el error que debes corregir primero en el próximo intento:
+\rule{7cm}{0.4pt} & \textbf{/35} \\
+\bottomrule
+\end{longtable}
+
+\begin{pausa}
+No te asignes puntaje sólo porque la consulta ``se parece'' a la pauta. Comprueba que ejecuta, que
+las columnas corresponden al enunciado y que las filas obtenidas cumplen todas las condiciones. Si
+no puedes ejecutarla, recorre en papel las seis decisiones y revisa cada relación de claves.
+\end{pausa}
+
+\section{Simulacro acumulativo}
+
+Resuelve sin mirar el solucionario. Antes de escribir SQL, anota las seis decisiones del método
+inicial.
+
+\subsection*{Parte A: muy fácil}
+
+\begin{enumerate}[label=\textbf{S.\arabic*}]
+  \item Muestra código, apellido, sueldo y departamento de todos los empleados.
+  \item Muestra los códigos de cargo distintos presentes en empleados.
+  \item Muestra los empleados que no reciben comisión.
+\end{enumerate}
+
+\subsection*{Parte B: intermedia}
+
+\begin{enumerate}[label=\textbf{S.\arabic*},resume]
+  \item Muestra código, nombre completo en mayúsculas, correo terminado en \campo{@BD.UCM.CL} y fecha
+  de contratación con formato \campo{DD-MM-YYYY}, para departamentos 50 y 80. Ordena desde la
+  contratación más reciente.
+  \item Muestra nombre de departamento, cantidad de empleados, sueldo mínimo, máximo y promedio.
+  Conserva departamentos cuyo promedio sea mayor que 7000.
+\end{enumerate}
+
+\subsection*{Parte C: difícil}
+
+\begin{enumerate}[label=\textbf{S.\arabic*},resume]
+  \item Muestra el código y nombre del empleado, título de su cargo, nombre de su departamento,
+  ciudad, región y nombre de su jefe directo. Conserva empleados sin jefe o sin departamento. La
+  salida debe estar ordenada por región, departamento y apellido.
+\end{enumerate}
+
+\ifmostrarSoluciones
+\newpage
+\section{Solucionario razonado}
+
+No uses este apartado como lectura pasiva. Para cada respuesta, señala con un lápiz qué parte
+corresponde a salida, origen, relación, filtro de fila, agrupamiento, filtro de grupo y orden.
+
+\subsection{Soluciones del módulo 1}
+
+\begin{enumerate}[label=\textbf{M1.\arabic*}]
+  \item \campo{SELECT}.
+  \item El asterisco \campo{*}.
+  \item \campo{DISTINCT}.
+  \item
+\begin{lstlisting}
+SELECT employee_id AS "CODIGO",
+       last_name AS "APELLIDO",
+       salary * 12 AS "ANUAL"
+FROM oehr_employees;
+\end{lstlisting}
+  \item La primera suma sólo 1200 al sueldo por la precedencia de la multiplicación. La segunda suma
+  100 al sueldo mensual y luego anualiza todo.
+  \item
+\begin{lstlisting}
+SELECT UPPER(last_name) || ' gana ' ||
+       TO_CHAR(salary * 12, 'FM999999990') ||
+       ' al anio' AS reporte
+FROM oehr_employees;
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{Soluciones del módulo 2}
+
+\begin{enumerate}[label=\textbf{M2.\arabic*}]
+  \item \campo{IS NULL}.
+  \item Exactamente un carácter.
+  \item \campo{DESC}.
+  \item
+\begin{lstlisting}
+SELECT employee_id, last_name, department_id, salary
+FROM oehr_employees
+WHERE department_id IN (50, 80)
+  AND salary BETWEEN 4000 AND 9000;
+\end{lstlisting}
+  \item \campo{WHERE LOWER(last\_name) LIKE '\_a\%s'}.
+  \item
+\begin{lstlisting}
+SELECT employee_id, last_name, department_id, salary
+FROM oehr_employees
+WHERE department_id IN (50, 80, 90)
+  AND commission_pct IS NULL
+ORDER BY department_id ASC, salary DESC;
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{Soluciones del módulo 3}
+
+\begin{enumerate}[label=\textbf{M3.\arabic*}]
+  \item \campo{UPPER}.
+  \item \campo{ROUND} redondea; \campo{TRUNC} elimina las posiciones sobrantes sin redondear.
+  \item Para evaluar una expresión una vez cuando no depende de una tabla de datos del usuario.
+  \item
+\begin{lstlisting}
+SELECT employee_id,
+       LOWER(SUBSTR(first_name, 1, 2) || '.' ||
+             last_name || '@ucm.cl') AS correo
+FROM oehr_employees;
+\end{lstlisting}
+  \item
+\begin{lstlisting}
+SELECT employee_id,
+       TRUNC(MONTHS_BETWEEN(SYSDATE, hire_date) / 12) AS anios
+FROM oehr_employees;
+\end{lstlisting}
+  \item
+\begin{lstlisting}
+SELECT employee_id,
+       UPPER(SUBSTR(last_name, -1, 1) ||
+             SUBSTR(first_name, 1, 1)) ||
+       TO_CHAR(LENGTH(first_name || last_name)) AS identificador
+FROM oehr_employees;
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{Soluciones del módulo 4}
+
+\begin{enumerate}[label=\textbf{M4.\arabic*}]
+  \item \campo{TO\_CHAR}.
+  \item Cero.
+  \item \campo{COALESCE}.
+  \item
+\begin{lstlisting}
+SELECT employee_id,
+       TO_CHAR(salary, 'FM999999990.00') AS sueldo,
+       TO_CHAR(hire_date, 'YYYY-MM-DD') AS fecha
+FROM oehr_employees;
+\end{lstlisting}
+  \item
+\begin{lstlisting}
+SELECT employee_id,
+       CASE
+         WHEN commission_pct IS NULL THEN 'SIN COMISION'
+         ELSE 'CON COMISION'
+       END AS estado
+FROM oehr_employees;
+\end{lstlisting}
+  \item
+\begin{lstlisting}
+SELECT first_name || ' ' || last_name AS empleado,
+       TO_CHAR(salary, 'FM$999,999,990.00') AS sueldo,
+       CASE
+         WHEN commission_pct IS NULL THEN 'SIN COMISION'
+         ELSE TO_CHAR(salary * commission_pct,
+                      'FM$999,999,990.00')
+       END AS monto_comision
+FROM oehr_employees;
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{Soluciones del módulo 5}
+
+\begin{enumerate}[label=\textbf{M5.\arabic*}]
+  \item \campo{AVG}.
+  \item \campo{COUNT(*)} cuenta filas; \campo{COUNT(commission\_pct)} sólo cuenta filas donde esa
+  columna no es nula.
+  \item \campo{HAVING}.
+  \item
+\begin{lstlisting}
+SELECT job_id, COUNT(*) AS cantidad
+FROM oehr_employees
+GROUP BY job_id;
+\end{lstlisting}
+  \item
+\begin{lstlisting}
+SELECT department_id, ROUND(AVG(salary), 2) AS promedio
+FROM oehr_employees
+GROUP BY department_id
+HAVING AVG(salary) > 8000;
+\end{lstlisting}
+  \item
+\begin{lstlisting}
+SELECT department_id,
+       job_id,
+       COUNT(*) AS cantidad,
+       ROUND(AVG(salary), 2) AS promedio
+FROM oehr_employees
+WHERE department_id IN (50, 80, 90)
+GROUP BY department_id, job_id
+HAVING COUNT(*) >= 2
+ORDER BY promedio DESC;
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{Soluciones del módulo 6}
+
+\begin{enumerate}[label=\textbf{M6.\arabic*}]
+  \item \campo{ON}; también puede utilizarse \campo{USING} cuando corresponda.
+  \item Para representar el rol de cada tabla, acortar sus nombres y evitar columnas ambiguas.
+  \item \campo{LEFT JOIN} desde empleados hacia departamentos.
+  \item
+\begin{lstlisting}
+SELECT e.employee_id, e.last_name, j.job_title
+FROM oehr_employees e
+JOIN oehr_jobs j ON e.job_id = j.job_id;
+\end{lstlisting}
+  \item
+\begin{lstlisting}
+SELECT e.last_name, d.department_name, l.city
+FROM oehr_employees e
+JOIN oehr_departments d ON e.department_id = d.department_id
+JOIN oehr_locations l ON d.location_id = l.location_id;
+\end{lstlisting}
+  \item El ``jefe del departamento'' se obtiene desde el identificador de jefe de la tabla
+  departamentos (alias \campo{d}), no necesariamente desde el jefe directo del empleado.
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.first_name || ' ' || e.last_name AS empleado,
+       d.department_name,
+       jd.first_name || ' ' || jd.last_name AS jefe_departamento,
+       l.city,
+       c.job_title
+FROM oehr_employees e
+JOIN oehr_jobs c
+  ON e.job_id = c.job_id
+LEFT JOIN oehr_departments d
+  ON e.department_id = d.department_id
+LEFT JOIN oehr_employees jd
+  ON d.manager_id = jd.employee_id
+LEFT JOIN oehr_locations l
+  ON d.location_id = l.location_id;
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{Soluciones del módulo 7}
+
+\begin{enumerate}[label=\textbf{M7.\arabic*}]
+  \item Entre paréntesis.
+  \item \campo{IN}.
+  \item La interna, porque su resultado alimenta la condición externa.
+  \item
+\begin{lstlisting}
+SELECT employee_id, last_name, salary
+FROM oehr_employees
+WHERE salary > (
+  SELECT AVG(salary)
+  FROM oehr_employees
+  WHERE department_id = 90
+);
+\end{lstlisting}
+  \item
+\begin{lstlisting}
+SELECT employee_id, last_name, job_id
+FROM oehr_employees
+WHERE job_id IN (
+  SELECT job_id
+  FROM oehr_employees
+  WHERE department_id = 50
+);
+\end{lstlisting}
+  \item
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.first_name || ' ' || e.last_name AS empleado,
+       d.department_name
+FROM oehr_employees e
+JOIN oehr_departments d
+  ON e.department_id = d.department_id
+WHERE e.department_id IN (
+  SELECT department_id
+  FROM oehr_employees
+  WHERE salary > 12000
+    AND department_id IS NOT NULL
+);
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{Soluciones del simulacro}
+
+\begin{enumerate}[label=\textbf{S.\arabic*}]
+  \item
+\begin{lstlisting}
+SELECT employee_id, last_name, salary, department_id
+FROM oehr_employees;
+\end{lstlisting}
+  \item
+\begin{lstlisting}
+SELECT DISTINCT job_id
+FROM oehr_employees;
+\end{lstlisting}
+  \item
+\begin{lstlisting}
+SELECT employee_id, last_name
+FROM oehr_employees
+WHERE commission_pct IS NULL;
+\end{lstlisting}
+  \item
+\begin{lstlisting}
+SELECT employee_id,
+       UPPER(first_name || ' ' || last_name) AS nombre,
+       email || '@BD.UCM.CL' AS correo,
+       TO_CHAR(hire_date, 'DD-MM-YYYY') AS fecha_contrato
+FROM oehr_employees
+WHERE department_id IN (50, 80)
+ORDER BY hire_date DESC;
+\end{lstlisting}
+  \item Se usa una unión para mostrar el nombre y se agrupa por identificador y nombre para no
+  mezclar departamentos distintos que, hipotéticamente, tuvieran el mismo nombre.
+\begin{lstlisting}
+SELECT d.department_id,
+       d.department_name,
+       COUNT(e.employee_id) AS cantidad,
+       MIN(e.salary) AS minimo,
+       MAX(e.salary) AS maximo,
+       ROUND(AVG(e.salary), 2) AS promedio
+FROM oehr_departments d
+JOIN oehr_employees e
+  ON d.department_id = e.department_id
+GROUP BY d.department_id, d.department_name
+HAVING AVG(e.salary) > 7000;
+\end{lstlisting}
+  \item La preservación de empleados exige que todas las tablas opcionales cuelguen mediante
+  \campo{LEFT JOIN} desde la cadena preservada.
+\begin{lstlisting}
+SELECT e.employee_id,
+       e.first_name || ' ' || e.last_name AS empleado,
+       j.job_title,
+       d.department_name,
+       l.city,
+       r.region_name,
+       jefe.first_name || ' ' || jefe.last_name AS jefe
+FROM oehr_employees e
+JOIN oehr_jobs j
+  ON e.job_id = j.job_id
+LEFT JOIN oehr_departments d
+  ON e.department_id = d.department_id
+LEFT JOIN oehr_locations l
+  ON d.location_id = l.location_id
+LEFT JOIN oehr_countries c
+  ON l.country_id = c.country_id
+LEFT JOIN oehr_regions r
+  ON c.region_id = r.region_id
+LEFT JOIN oehr_employees jefe
+  ON e.manager_id = jefe.employee_id
+ORDER BY r.region_name, d.department_name, e.last_name;
+\end{lstlisting}
+\end{enumerate}
+
+\fi
+\section{Hoja de repaso final}
+
+Antes de entregar una consulta, verifica:
+
+\begin{enumerate}
+  \item ¿Escribí exactamente \tabla{OEHR\_EMPLOYEES}, \tabla{OEHR\_DEPARTMENTS} y
+  \tabla{OEHR\_JOBS}?
+  \item ¿Cada columna pertenece realmente a la tabla cuyo alias utilicé?
+  \item ¿Separé todas las expresiones del \campo{SELECT} con comas?
+  \item ¿Las cadenas tienen comillas simples y los alias especiales comillas dobles?
+  \item ¿Comparé los nulos con \campo{IS NULL} o \campo{IS NOT NULL}?
+  \item ¿Normalicé mayúsculas y minúsculas en búsquedas textuales?
+  \item ¿Usé \campo{WHERE} para filas y \campo{HAVING} para resultados agregados?
+  \item ¿Incluí en \campo{GROUP BY} todas las columnas no agregadas del resultado?
+  \item ¿Cada \campo{JOIN} tiene una relación de clave correcta y calificada con alias?
+  \item ¿Elegí \campo{LEFT JOIN} cuando debían conservarse filas sin coincidencia?
+  \item ¿Usé \campo{IN} si una subconsulta puede devolver varias filas?
+  \item ¿Dejé un único punto y coma al final?
+\end{enumerate}
+
+\begin{clave}
+La mejor forma de estudiar no es memorizar el orden visual de un ejemplo. Toma un requerimiento,
+subraya sustantivos para descubrir columnas y tablas, encierra las restricciones de filas, marca las
+palabras ``por cada'' para descubrir agrupamientos y busca ``promedio'', ``cantidad'', ``máximo'',
+``mínimo'' o ``total'' para descubrir funciones de grupo.
+\end{clave}
+
+\section{Documentación oficial utilizada}
+
+Las siguientes páginas pertenecen a \emph{Oracle Database 21c SQL Language Reference}. Se usaron
+para comprobar la sintaxis y complementar los scripts del curso:
+
+\begin{itemize}
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/SELECT.html}
+  {SELECT y sus cláusulas};
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/Conditions.html}
+  {condiciones SQL};
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/Pattern-matching-Conditions.html}
+  {condiciones de patrones LIKE};
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/Null-Conditions.html}
+  {condiciones de valores nulos};
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/Single-Row-Functions.html}
+  {funciones de una sola fila};
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/Aggregate-Functions.html}
+  {funciones de agregación};
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/Joins.html}
+  {uniones};
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/Scalar-Subquery-Expressions.html}
+  {expresiones de subconsulta escalar};
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/TO_CHAR-datetime.html}
+  {TO\_CHAR para fechas};
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/TO_DATE.html}
+  {TO\_DATE};
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/NVL.html}
+  {NVL} y
+  \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/NVL2.html}
+  {NVL2};
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/CASE-Expressions.html}
+  {expresiones CASE} y
+  \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/DECODE.html}
+  {DECODE};
+  \item \href{https://docs.oracle.com/en/database/oracle/oracle-database/21/sqlrf/Datetime-Functions.html}
+  {funciones de fecha y hora}.
+\end{itemize}
+
+\paragraph{Nota de alcance.}
+La documentación oficial describe muchas capacidades que exceden esta evaluación. La selección de
+temas de esta guía se restringe a lo enseñado en U1 L1--L6 y a las habilidades visibles en la pauta.
+No se incluyen procedimientos PL/SQL, triggers, control de concurrencia ni administración, porque no
+aparecen en los materiales de esta primera prueba.
+
+\end{document}

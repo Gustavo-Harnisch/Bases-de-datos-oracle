@@ -1,0 +1,150 @@
+\documentclass[a4paper]{article}
+
+\usepackage[margin=7mm]{geometry}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{listings}
+\usepackage{tabularx}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.03}
+
+\definecolor{cabecera}{HTML}{D9EAF7}
+\definecolor{borde}{HTML}{5B6573}
+
+\lstdefinelanguage{OracleSQL}{
+  language=SQL,
+  morekeywords={CONCAT,SUBSTR,UPPER},
+  sensitive=false
+}
+
+\lstset{
+  language=OracleSQL,
+  basicstyle=\ttfamily\fontsize{7pt}{8pt}\selectfont,
+  keywordstyle=\bfseries,
+  stringstyle=\itshape,
+  breaklines=true,
+  breakatwhitespace=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  aboveskip=1pt,
+  belowskip=0pt,
+  frame=none
+}
+
+\newcommand{\consultas}{pauta-es1-consultas-sql.sql}
+\newcommand{\codigo}[2]{%
+  \begin{minipage}[t]{\linewidth}
+    \vspace{0.5pt}
+    \lstinputlisting[firstline=#1,lastline=#2]{\consultas}
+    \vspace{0.5pt}
+  \end{minipage}%
+}
+
+\begin{document}
+\color{black}
+\arrayrulecolor{borde}
+
+\begin{minipage}[t]{\textwidth}
+\begin{tabularx}{\linewidth}{|>{\centering\arraybackslash\bfseries\fontsize{7.5pt}{8pt}\selectfont}m{7mm}|X|}
+\hline
+\rowcolor{cabecera}
+Req. & \centering\arraybackslash\bfseries\fontsize{7.5pt}{8pt}\selectfont Código SQL \\
+\hline
+1 & \codigo{9}{16} \\
+\hline
+2 & \codigo{22}{28} \\
+\hline
+3 & \codigo{34}{42} \\
+\hline
+\end{tabularx}
+\end{minipage}
+
+\vspace{3mm}
+
+\begin{minipage}[t]{\textwidth}
+\begin{tabularx}{\linewidth}{|>{\centering\arraybackslash\bfseries\fontsize{7.5pt}{8pt}\selectfont}m{7mm}|X|}
+\hline
+\rowcolor{cabecera}
+Req. & \centering\arraybackslash\bfseries\fontsize{7.5pt}{8pt}\selectfont Código SQL \\
+\hline
+4 & \codigo{48}{52} \\
+\hline
+5 & \codigo{58}{68} \\
+\hline
+6 & \codigo{75}{92} \\
+\hline
+\end{tabularx}
+\end{minipage}
+
+\clearpage
+
+\begin{minipage}[t]{\textwidth}
+\begin{tabularx}{\linewidth}{|>{\centering\arraybackslash\bfseries\fontsize{7.5pt}{8pt}\selectfont}m{7mm}|X|}
+\hline
+\rowcolor{cabecera}
+Req. & \centering\arraybackslash\bfseries\fontsize{7.5pt}{8pt}\selectfont Código SQL \\
+\hline
+7 & \codigo{99}{113} \\
+\hline
+\end{tabularx}
+\end{minipage}
+
+\vspace{4mm}
+
+{\fontsize{6.6pt}{7.5pt}\selectfont
+\begin{tabularx}{\textwidth}{|>{\centering\arraybackslash\ttfamily\bfseries}m{13mm}|X|>{\centering\arraybackslash\ttfamily\bfseries}m{13mm}|X|}
+\hline
+\rowcolor{cabecera}
+\multicolumn{4}{|c|}{\bfseries Formatos principales de fecha para \texttt{TO\_CHAR(SYSDATE, formato)}} \\
+\hline
+DD & Día del mes en número: 01--31 & D & Día de la semana en número: 1--7 \\
+\hline
+DY & Nombre abreviado del día: LUN & DAY & Nombre completo del día: LUNES \\
+\hline
+DDD & Día del año: 001--366 & MM & Mes en número: 01--12 \\
+\hline
+MON & Nombre abreviado del mes: SEP & MONTH & Nombre completo del mes: SEPTIEMBRE \\
+\hline
+RM & Mes en números romanos: I--XII & Q & Trimestre del año: 1--4 \\
+\hline
+W & Semana del mes: 1--5 & WW & Semana del año: 01--53 \\
+\hline
+IW & Semana ISO del año: 01--53 & YYYY & Año con cuatro dígitos: 2026 \\
+\hline
+YY & Últimos dos dígitos del año: 26 & RR & Año de dos dígitos con ajuste de siglo \\
+\hline
+RRRR & Año de dos o cuatro dígitos & CC & Número del siglo \\
+\hline
+HH12 & Hora en formato de 12 horas: 01--12 & HH24 & Hora en formato de 24 horas: 00--23 \\
+\hline
+MI & Minutos: 00--59 & SS & Segundos: 00--59 \\
+\hline
+SSSSS & Segundos transcurridos desde medianoche & AM/PM & Indicador antes o después del mediodía \\
+\hline
+J & Número de día juliano & FM & Elimina ceros y espacios de relleno \\
+\hline
+\textnormal{"texto"} & Inserta texto literal dentro de la fecha & / : - , & Separadores que se muestran en el resultado \\
+\hline
+\rowcolor{cabecera}
+\multicolumn{4}{|c|}{\bfseries Formatos principales de números para \texttt{TO\_CHAR(numero, formato)}} \\
+\hline
+9 & Dígito opcional; deja un espacio si falta & 0 & Dígito obligatorio; completa con cero \\
+\hline
+G & Separador de miles definido por NLS & D & Separador decimal definido por NLS \\
+\hline
+\$ & Símbolo de dólar & L & Símbolo monetario local definido por NLS \\
+\hline
+S & Signo positivo o negativo & MI & Signo negativo colocado al final \\
+\hline
+PR & Negativos entre ángulos & FM & Elimina espacios y ceros de relleno \\
+\hline
+EEEE & Notación científica & V & Multiplica por una potencia de diez \\
+\hline
+\end{tabularx}
+}
+
+\end{document}
